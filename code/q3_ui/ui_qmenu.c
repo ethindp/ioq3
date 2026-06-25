@@ -1495,6 +1495,36 @@ void Menu_ItemText( void *ptr, char *out, int outsize )
 
 /*
 =================
+Menu_ItemValue
+
+Returns the current value of a value-bearing control so in-place changes
+(left/right on a spin or slider, up/down in a list, toggling) can be detected.
+=================
+*/
+static qboolean Menu_ItemValue( menucommon_s *item, int *value )
+{
+	switch ( item->type )
+	{
+	case MTYPE_SPINCONTROL:
+	case MTYPE_SCROLLLIST:
+		*value = ((menulist_s *)item)->curvalue;
+		return qtrue;
+
+	case MTYPE_SLIDER:
+		*value = (int)((menuslider_s *)item)->curvalue;
+		return qtrue;
+
+	case MTYPE_RADIOBUTTON:
+		*value = ((menuradiobutton_s *)item)->curvalue;
+		return qtrue;
+
+	default:
+		return qfalse;
+	}
+}
+
+/*
+=================
 Menu_CursorMoved
 =================
 */
@@ -1773,8 +1803,11 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 
 	// route key stimulus to widget
 	item = Menu_ItemAtCursor( m );
-	if (item && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
+if (item && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
 	{
+		int			prevValue = 0;
+		qboolean	tracked = Menu_ItemValue( item, &prevValue );
+
 		switch (item->type)
 		{
 			case MTYPE_SPINCONTROL:
@@ -1796,6 +1829,22 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 			case MTYPE_FIELD:
 				sound = MenuField_Key( (menufield_s*)item, &key );
 				break;
+		}
+
+		// value changed in place
+		if ( tracked )
+		{
+			int newValue = 0;
+
+			Menu_ItemValue( item, &newValue );
+			if ( newValue != prevValue )
+			{
+				char speech[4096];
+
+				Menu_ItemText( item, speech, sizeof( speech ) );
+				if ( speech[0] )
+					trap_Speak( speech, qtrue );
+			}
 		}
 
 		if (sound) {
