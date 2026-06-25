@@ -368,6 +368,7 @@ extern	refexport_t		re;		// interface to refresh .dll
 extern	cvar_t	*cl_nodelta;
 extern	cvar_t	*cl_debugMove;
 extern	cvar_t	*cl_noprint;
+extern	cvar_t	*cl_prism;
 extern	cvar_t	*cl_timegraph;
 extern	cvar_t	*cl_maxpackets;
 extern	cvar_t	*cl_packetdup;
@@ -483,6 +484,10 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum );
 int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
 
 qboolean CL_CheckPaused(void);
+
+void CL_Prism_Init( void );
+void CL_Prism_Shutdown( void );
+void CL_Prism_Print( const char *txt );
 
 //
 // cl_input

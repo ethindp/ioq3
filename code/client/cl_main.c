@@ -3752,7 +3752,7 @@ void CL_Init( void ) {
 	CL_GenerateQKey();
 	Cvar_Get( "cl_guid", "", CVAR_USERINFO | CVAR_ROM );
 	CL_UpdateGUID( NULL, 0 );
-
+	CL_Prism_Init();
 	Com_Printf( "----- Client Initialization Complete -----\n" );
 }
 
@@ -3786,6 +3786,7 @@ void CL_Shutdown(char *finalmsg, qboolean disconnect, qboolean quit)
 	
 	CL_ClearMemory(qtrue);
 	CL_Snd_Shutdown();
+	CL_Prism_Shutdown();
 
 #ifdef USE_HTTP
 	CL_HTTP_Shutdown();

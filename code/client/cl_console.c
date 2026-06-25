@@ -462,7 +462,7 @@ void CL_ConsolePrint( char *txt ) {
 	if ( cl_noprint && cl_noprint->integer ) {
 		return;
 	}
-	
+	CL_Prism_Print( txt );
 	if (!con.initialized) {
 		con.color[0] = 
 		con.color[1] = 
