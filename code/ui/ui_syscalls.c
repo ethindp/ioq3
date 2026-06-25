@@ -44,6 +44,10 @@ void trap_Print( const char *string ) {
 	syscall( UI_PRINT, string );
 }
 
+void trap_Speak( const char *text, qboolean interrupt ) {
+	syscall( UI_SPEAK, text, interrupt );
+}
+
 void trap_Error(const char *string)
 {
 	syscall(UI_ERROR, string);

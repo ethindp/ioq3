@@ -297,7 +297,7 @@ void UI_MainMenu( void ) {
 		s_errorMessage.menu.fullscreen = qtrue;
 		s_errorMessage.menu.wrapAround = qtrue;
 		s_errorMessage.menu.showlogo = qtrue;		
-
+		s_errorMessage.menu.speakinstructions = s_errorMessage.errorMessage;
 		trap_Key_SetCatcher( KEYCATCH_UI );
 		uis.menusp = 0;
 		UI_PushMenu ( &s_errorMessage.menu );

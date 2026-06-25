@@ -112,6 +112,7 @@ void UI_PushMenu( menuframework_s *menu )
 	trap_Key_SetCatcher( KEYCATCH_UI );
 
 	// force first available item to have focus
+	uiSpeakSuppress = qtrue;
 	for (i=0; i<menu->nitems; i++)
 	{
 		item = (menucommon_s *)menu->items[i];
@@ -122,7 +123,53 @@ void UI_PushMenu( menuframework_s *menu )
 			break;
 		}
 	}
+	uiSpeakSuppress = qfalse;
+// menu entry is a distinct state: orientation (title + instructions) is
+	// spoken interrupting, then the auto-selected first item is queued behind it
+	{
+		static qboolean	toldControls = qfalse;
+		const char		*instr;
+		char			orient[512];
+		char			itemtext[256];
+		int				j;
 
+		orient[0] = '\0';
+
+		// title, from the banner item
+		for (j=0; j<menu->nitems; j++)
+		{
+			menucommon_s *it = (menucommon_s *)menu->items[j];
+			if (it->type == MTYPE_BTEXT && ((menutext_s *)it)->string)
+			{
+				Q_strncpyz( orient, ((menutext_s *)it)->string, sizeof( orient ) );
+				break;
+			}
+		}
+
+		// instructions: this menu's own, or the control summary once per session
+		instr = menu->speakinstructions;
+		if ( !instr && !toldControls )
+		{
+			instr = "Use the up and down arrows to move, enter to select, escape to go back.";
+			toldControls = qtrue;
+		}
+		if ( instr && instr[0] )
+		{
+			if ( orient[0] )
+				Q_strcat( orient, sizeof( orient ), ". " );
+			Q_strcat( orient, sizeof( orient ), instr );
+		}
+
+		if ( orient[0] )
+			trap_Speak( orient, qtrue );	// interrupt: orient on the new menu
+
+		// auto-selected first item, queued behind the orientation
+		itemtext[0] = '\0';
+		if ( menu->cursor >= 0 && menu->cursor < menu->nitems )
+			Menu_ItemText( menu->items[menu->cursor], itemtext, sizeof( itemtext ) );
+		if ( itemtext[0] )
+			trap_Speak( itemtext, qfalse );	// queue: read after the orientation
+	}
 	uis.firstdraw = qtrue;
 }
 

@@ -161,6 +161,7 @@ typedef struct _tag_menuframework
 	qboolean	wrapAround;
 	qboolean	fullscreen;
 	qboolean	showlogo;
+	const char	*speakinstructions;
 } menuframework_s;
 
 typedef struct
@@ -295,7 +296,8 @@ extern vec4_t		listbar_color;
 extern vec4_t		text_color_disabled; 
 extern vec4_t		text_color_normal;
 extern vec4_t		text_color_highlight;
-
+extern qboolean	uiSpeakSuppress;
+extern void			Menu_ItemText( void *ptr, char *out, int outsize );
 extern char	*ui_medalNames[];
 extern char	*ui_medalPicNames[];
 extern char	*ui_medalSounds[];
@@ -626,6 +628,7 @@ void UI_SPSkillMenu_Cache( void );
 // ui_syscalls.c
 //
 void			trap_Print( const char *string );
+void			trap_Speak( const char *text, qboolean interrupt );
 void			trap_Error( const char *string ) Q_NO_RETURN;
 int				trap_Milliseconds( void );
 void			trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );

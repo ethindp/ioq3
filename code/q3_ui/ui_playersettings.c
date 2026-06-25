@@ -388,6 +388,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.name.generic.type			= MTYPE_FIELD;
 	s_playersettings.name.generic.flags			= QMF_NODEFAULTINIT;
 	s_playersettings.name.generic.ownerdraw		= PlayerSettings_DrawName;
+	s_playersettings.name.generic.name = "Player name";
 	s_playersettings.name.field.widthInChars	= MAX_NAMELENGTH;
 	s_playersettings.name.field.maxchars		= MAX_NAMELENGTH;
 	s_playersettings.name.generic.x				= 192;
@@ -401,6 +402,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.handicap.generic.type		= MTYPE_SPINCONTROL;
 	s_playersettings.handicap.generic.flags		= QMF_NODEFAULTINIT;
 	s_playersettings.handicap.generic.id		= ID_HANDICAP;
+	s_playersettings.handicap.generic.name = "Handicap";
 	s_playersettings.handicap.generic.ownerdraw	= PlayerSettings_DrawHandicap;
 	s_playersettings.handicap.generic.x			= 192;
 	s_playersettings.handicap.generic.y			= y;
@@ -421,6 +423,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.effects.generic.top		= y - 8;
 	s_playersettings.effects.generic.right		= 192 + 200;
 	s_playersettings.effects.generic.bottom		= y + 2* PROP_HEIGHT;
+	s_playersettings.effects.generic.name = "Effects";
 	s_playersettings.effects.numitems			= 7;
 
 	s_playersettings.model.generic.type			= MTYPE_BITMAP;

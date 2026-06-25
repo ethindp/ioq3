@@ -1360,6 +1360,139 @@ void Menu_AddItem( menuframework_s *menu, void *item )
 	menu->nitems++;
 }
 
+qboolean	uiSpeakSuppress = qfalse;
+
+/*
+=================
+Menu_BitmapName
+
+Reduces a bitmap shader path to a spoken label: "menu/art/accept_0" -> "accept".
+=================
+*/
+static void Menu_BitmapName( const char *pic, char *out, int outsize )
+{
+	int		len;
+
+	if ( !pic || !pic[0] )
+	{
+		out[0] = '\0';
+		return;
+	}
+
+	Q_strncpyz( out, COM_SkipPath( (char *)pic ), outsize );
+
+	len = strlen( out );
+	if ( len >= 2 && out[len-2] == '_' && out[len-1] >= '0' && out[len-1] <= '9' )
+		out[len-2] = '\0';
+}
+
+/*
+=================
+Menu_TypeName
+
+Spoken role for a control when it has no readable label, so focus is never
+silent -- and so any item that speaks only its role is flagged as one still
+needing a real label.
+=================
+*/
+static const char *Menu_TypeName( int type )
+{
+	switch ( type )
+	{
+	case MTYPE_SLIDER:		return "slider";
+	case MTYPE_SPINCONTROL:	return "option";
+	case MTYPE_FIELD:		return "edit field";
+	case MTYPE_RADIOBUTTON:	return "toggle";
+	case MTYPE_SCROLLLIST:	return "list";
+	case MTYPE_ACTION:
+	case MTYPE_BITMAP:
+	case MTYPE_PTEXT:		return "button";
+	default:				return "item";
+	}
+}
+
+/*
+=================
+Menu_ItemText
+
+Builds the spoken description of a menu item.  Label and value are read from
+whichever fields hold them for that type; if no label is found, the control's
+kind is spoken instead so navigation is never silent.
+=================
+*/
+void Menu_ItemText( void *ptr, char *out, int outsize )
+{
+	menucommon_s	*item = (menucommon_s *)ptr;
+	char			label[256];
+	char			value[256];
+
+	out[0] = '\0';
+	if ( !item )
+		return;
+
+	label[0] = '\0';
+	value[0] = '\0';
+
+	switch ( item->type )
+	{
+	case MTYPE_TEXT:
+	case MTYPE_PTEXT:
+	case MTYPE_BTEXT:
+		if ( ((menutext_s *)item)->string )
+			Q_strncpyz( label, ((menutext_s *)item)->string, sizeof( label ) );
+		break;
+
+	case MTYPE_BITMAP:
+		Menu_BitmapName( item->name, label, sizeof( label ) );
+		break;
+
+	case MTYPE_SPINCONTROL:
+	case MTYPE_SCROLLLIST:
+		{
+			menulist_s *l = (menulist_s *)item;
+
+			if ( item->name )
+				Q_strncpyz( label, item->name, sizeof( label ) );
+			if ( l->itemnames && l->curvalue >= 0 && l->curvalue < l->numitems )
+				Q_strncpyz( value, l->itemnames[l->curvalue], sizeof( value ) );
+		}
+		break;
+
+	case MTYPE_RADIOBUTTON:
+		if ( item->name )
+			Q_strncpyz( label, item->name, sizeof( label ) );
+		Q_strncpyz( value, ((menuradiobutton_s *)item)->curvalue ? "on" : "off",
+			sizeof( value ) );
+		break;
+
+	case MTYPE_SLIDER:
+		if ( item->name )
+			Q_strncpyz( label, item->name, sizeof( label ) );
+		Com_sprintf( value, sizeof( value ), "%i",
+			(int)((menuslider_s *)item)->curvalue );
+		break;
+
+	case MTYPE_FIELD:
+		if ( item->name )
+			Q_strncpyz( label, item->name, sizeof( label ) );
+		Q_strncpyz( value, ((menufield_s *)item)->field.buffer, sizeof( value ) );
+		break;
+
+	default:
+		if ( item->name )
+			Q_strncpyz( label, item->name, sizeof( label ) );
+		break;
+	}
+
+	if ( !label[0] )
+		Q_strncpyz( label, Menu_TypeName( item->type ), sizeof( label ) );
+
+	if ( value[0] )
+		Com_sprintf( out, outsize, "%s %s", label, value );
+	else
+		Q_strncpyz( out, label, outsize );
+}
+
 /*
 =================
 Menu_CursorMoved
@@ -1384,6 +1517,15 @@ void Menu_CursorMoved( menuframework_s *m )
 		callback = ((menucommon_s*)(m->items[m->cursor]))->callback;
 		if (callback)
 			callback(m->items[m->cursor],QM_GOTFOCUS);
+
+		if ( !uiSpeakSuppress )
+		{
+			char	speech[256];
+
+			Menu_ItemText( m->items[m->cursor], speech, sizeof( speech ) );
+			if ( speech[0] )
+				trap_Speak( speech, qtrue );
+		}
 	}
 }
 

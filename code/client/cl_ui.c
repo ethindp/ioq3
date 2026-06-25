@@ -729,6 +729,10 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 		Com_Printf( "%s", (const char*)VMA(1) );
 		return 0;
 
+	case UI_SPEAK:
+		CL_Prism_Speak( VMA(1), args[2] );
+		return 0;
+
 	case UI_MILLISECONDS:
 		return Sys_Milliseconds();
 

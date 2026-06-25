@@ -163,3 +163,29 @@ void CL_Prism_Print( const char *txt ) {
 	}
 	recursive = qfalse;
 }
+
+/*
+====================
+CL_Prism_Speak
+
+Speaks text on demand (menu focus, etc).  Unlike console output this may
+interrupt whatever is currently speaking, so fast menu navigation doesn't
+queue stale items.
+====================
+*/
+void CL_Prism_Speak( const char *text, qboolean interrupt ) {
+	char	clean[MAXPRINTMSG];
+	if ( !prismReady || !text || !cl_prism->integer ) {
+		return;
+	}
+	Q_strncpyz( clean, text, sizeof( clean ) );
+	Q_CleanStr( clean );
+	if ( !clean[0] ) {
+		return;
+	}
+	if ( prismHasOutput ) {
+		(void)prism_backend_output( prismBackend, clean, interrupt );
+	} else {
+		(void)prism_backend_speak( prismBackend, clean, interrupt );
+	}
+}
