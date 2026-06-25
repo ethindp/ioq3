@@ -214,6 +214,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
     displayOptionsInfo.screensize.maxvalue			= 10;
 
 	displayOptionsInfo.back.generic.type		= MTYPE_BITMAP;
+	displayOptionsInfo.back.generic.accessibleName = "Back";
 	displayOptionsInfo.back.generic.name		= ART_BACK0;
 	displayOptionsInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	displayOptionsInfo.back.generic.callback	= UI_DisplayOptionsMenu_Event;

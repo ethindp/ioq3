@@ -276,6 +276,7 @@ static void UI_SetupMenu_Init( void ) {
 	}
 
 	setupMenuInfo.back.generic.type					= MTYPE_BITMAP;
+	setupMenuInfo.back.generic.accessibleName = "Back";
 	setupMenuInfo.back.generic.name					= ART_BACK0;
 	setupMenuInfo.back.generic.flags				= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	setupMenuInfo.back.generic.id					= ID_BACK;

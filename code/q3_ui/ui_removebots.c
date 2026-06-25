@@ -261,6 +261,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.arrows.height			= 128;
 
 	removeBotsMenuInfo.up.generic.type			= MTYPE_BITMAP;
+	removeBotsMenuInfo.up.generic.accessibleName = "Scroll up";
 	removeBotsMenuInfo.up.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	removeBotsMenuInfo.up.generic.x				= 200;
 	removeBotsMenuInfo.up.generic.y				= 128;
@@ -271,6 +272,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.up.focuspic				= ART_ARROWUP;
 
 	removeBotsMenuInfo.down.generic.type		= MTYPE_BITMAP;
+	removeBotsMenuInfo.down.generic.accessibleName = "Scroll down";
 	removeBotsMenuInfo.down.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	removeBotsMenuInfo.down.generic.x			= 200;
 	removeBotsMenuInfo.down.generic.y			= 128+64;
@@ -293,6 +295,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	}
 
 	removeBotsMenuInfo.delete.generic.type		= MTYPE_BITMAP;
+	removeBotsMenuInfo.delete.generic.accessibleName = "Remove bot";
 	removeBotsMenuInfo.delete.generic.name		= ART_DELETE0;
 	removeBotsMenuInfo.delete.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	removeBotsMenuInfo.delete.generic.id		= ID_DELETE;
@@ -304,6 +307,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.delete.focuspic			= ART_DELETE1;
 
 	removeBotsMenuInfo.back.generic.type		= MTYPE_BITMAP;
+	removeBotsMenuInfo.back.generic.accessibleName = "Back";
 	removeBotsMenuInfo.back.generic.name		= ART_BACK0;
 	removeBotsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	removeBotsMenuInfo.back.generic.id			= ID_BACK;

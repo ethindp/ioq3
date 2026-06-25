@@ -273,6 +273,7 @@ static void UI_SPSkillMenu_Init( void ) {
 	skillMenuInfo.item_nightmare.style				= UI_CENTER;
 
 	skillMenuInfo.item_back.generic.type		= MTYPE_BITMAP;
+	skillMenuInfo.item_back.generic.accessibleName = "Back";
 	skillMenuInfo.item_back.generic.name		= ART_BACK;
 	skillMenuInfo.item_back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	skillMenuInfo.item_back.generic.x			= 0;
@@ -291,6 +292,7 @@ static void UI_SPSkillMenu_Init( void ) {
 	skillMenuInfo.art_skillPic.height			= 96;
 
 	skillMenuInfo.item_fight.generic.type		= MTYPE_BITMAP;
+	skillMenuInfo.item_fight.generic.accessibleName = "Fight";
 	skillMenuInfo.item_fight.generic.name		= ART_FIGHT;
 	skillMenuInfo.item_fight.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	skillMenuInfo.item_fight.generic.callback	= UI_SPSkillMenu_FightEvent;

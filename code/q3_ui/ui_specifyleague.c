@@ -223,6 +223,7 @@ void SpecifyLeague_MenuInit( void )
 	s_specifyleague.rankname.field.maxchars     = 80;
 
 	s_specifyleague.list.generic.type			= MTYPE_SCROLLLIST;
+	s_specifyleague.list.generic.accessibleName = "Leagues";
 	s_specifyleague.list.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
 	s_specifyleague.list.generic.id				= ID_SPECIFYLEAGUELIST;
 	s_specifyleague.list.generic.callback		= SpecifyLeague_Event;
@@ -248,6 +249,7 @@ void SpecifyLeague_MenuInit( void )
 	s_specifyleague.arrows.height				= 128;
 
 	s_specifyleague.up.generic.type				= MTYPE_BITMAP;
+	s_specifyleague.up.generic.accessibleName = "Scroll up";
 	s_specifyleague.up.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	s_specifyleague.up.generic.callback			= SpecifyLeague_Event;
 	s_specifyleague.up.generic.id				= ID_SPECIFYLEAGUEUP;
@@ -258,6 +260,7 @@ void SpecifyLeague_MenuInit( void )
 	s_specifyleague.up.focuspic					= SPECIFYLEAGUE_UP;
 
 	s_specifyleague.down.generic.type			= MTYPE_BITMAP;
+	s_specifyleague.down.generic.accessibleName = "Scroll down";
 	s_specifyleague.down.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	s_specifyleague.down.generic.callback		= SpecifyLeague_Event;
 	s_specifyleague.down.generic.id				= ID_SPECIFYLEAGUEDOWN;
@@ -268,6 +271,7 @@ void SpecifyLeague_MenuInit( void )
 	s_specifyleague.down.focuspic				= SPECIFYLEAGUE_DOWN;
 
 	s_specifyleague.back.generic.type	  = MTYPE_BITMAP;
+	s_specifyleague.back.generic.accessibleName = "Back";
 	s_specifyleague.back.generic.name     = SPECIFYLEAGUE_BACK0;
 	s_specifyleague.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_specifyleague.back.generic.callback = SpecifyLeague_Event;

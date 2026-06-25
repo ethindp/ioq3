@@ -1438,12 +1438,13 @@ void Menu_ItemText( void *ptr, char *out, int outsize )
 	case MTYPE_TEXT:
 	case MTYPE_PTEXT:
 	case MTYPE_BTEXT:
-		if ( ((menutext_s *)item)->string )
+		if ( ((menutext_s *)item)->string && ! item->accessibleName )
 			Q_strncpyz( label, ((menutext_s *)item)->string, sizeof( label ) );
 		break;
 
 	case MTYPE_BITMAP:
-		Menu_BitmapName( item->name, label, sizeof( label ) );
+		if ( ! item->accessibleName )
+			Menu_BitmapName( item->name, label, sizeof( label ) );
 		break;
 
 	case MTYPE_SPINCONTROL:
@@ -1451,7 +1452,7 @@ void Menu_ItemText( void *ptr, char *out, int outsize )
 		{
 			menulist_s *l = (menulist_s *)item;
 
-			if ( item->name )
+			if ( item->name && ! item->accessibleName )
 				Q_strncpyz( label, item->name, sizeof( label ) );
 			if ( l->itemnames && l->curvalue >= 0 && l->curvalue < l->numitems )
 				Q_strncpyz( value, l->itemnames[l->curvalue], sizeof( value ) );
@@ -1459,30 +1460,33 @@ void Menu_ItemText( void *ptr, char *out, int outsize )
 		break;
 
 	case MTYPE_RADIOBUTTON:
-		if ( item->name )
+		if ( item->name && ! item->accessibleName )
 			Q_strncpyz( label, item->name, sizeof( label ) );
 		Q_strncpyz( value, ((menuradiobutton_s *)item)->curvalue ? "on" : "off",
 			sizeof( value ) );
 		break;
 
 	case MTYPE_SLIDER:
-		if ( item->name )
+		if ( item->name && ! item->accessibleName )
 			Q_strncpyz( label, item->name, sizeof( label ) );
 		Com_sprintf( value, sizeof( value ), "%i",
 			(int)((menuslider_s *)item)->curvalue );
 		break;
 
 	case MTYPE_FIELD:
-		if ( item->name )
+		if ( item->name && ! item->accessibleName )
 			Q_strncpyz( label, item->name, sizeof( label ) );
 		Q_strncpyz( value, ((menufield_s *)item)->field.buffer, sizeof( value ) );
 		break;
 
 	default:
-		if ( item->name )
+		if ( item->name && ! item->accessibleName )
 			Q_strncpyz( label, item->name, sizeof( label ) );
 		break;
 	}
+
+	if ( item->accessibleName )
+		Q_strncpyz( label, item->accessibleName, sizeof( label ) );
 
 	if ( !label[0] )
 		Q_strncpyz( label, Menu_TypeName( item->type ), sizeof( label ) );
@@ -1491,36 +1495,6 @@ void Menu_ItemText( void *ptr, char *out, int outsize )
 		Com_sprintf( out, outsize, "%s %s", label, value );
 	else
 		Q_strncpyz( out, label, outsize );
-}
-
-/*
-=================
-Menu_ItemValue
-
-Returns the current value of a value-bearing control so in-place changes
-(left/right on a spin or slider, up/down in a list, toggling) can be detected.
-=================
-*/
-static qboolean Menu_ItemValue( menucommon_s *item, int *value )
-{
-	switch ( item->type )
-	{
-	case MTYPE_SPINCONTROL:
-	case MTYPE_SCROLLLIST:
-		*value = ((menulist_s *)item)->curvalue;
-		return qtrue;
-
-	case MTYPE_SLIDER:
-		*value = (int)((menuslider_s *)item)->curvalue;
-		return qtrue;
-
-	case MTYPE_RADIOBUTTON:
-		*value = ((menuradiobutton_s *)item)->curvalue;
-		return qtrue;
-
-	default:
-		return qfalse;
-	}
 }
 
 /*
@@ -1803,48 +1777,62 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 
 	// route key stimulus to widget
 	item = Menu_ItemAtCursor( m );
-if (item && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
+	if (item && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
 	{
-		int			prevValue = 0;
-		qboolean	tracked = Menu_ItemValue( item, &prevValue );
+		char		before[256];
+		qboolean	isField = ( item->type == MTYPE_FIELD );
+		int			fieldLen = 0;
+
+		if ( isField )
+			fieldLen = strlen( ((menufield_s *)item)->field.buffer );
+		else
+			Menu_ItemText( item, before, sizeof( before ) );
 
 		switch (item->type)
 		{
 			case MTYPE_SPINCONTROL:
 				sound = SpinControl_Key( (menulist_s*)item, key );
 				break;
-
 			case MTYPE_RADIOBUTTON:
 				sound = RadioButton_Key( (menuradiobutton_s*)item, key );
 				break;
-
 			case MTYPE_SLIDER:
 				sound = Slider_Key( (menuslider_s*)item, key );
 				break;
-
 			case MTYPE_SCROLLLIST:
 				sound = ScrollList_Key( (menulist_s*)item, key );
 				break;
-
 			case MTYPE_FIELD:
 				sound = MenuField_Key( (menufield_s*)item, &key );
 				break;
 		}
 
-		// value changed in place
-		if ( tracked )
+		if ( isField )
 		{
-			int newValue = 0;
+			// fields are an edit experience: echo the typed character, not the buffer
+			menufield_s	*f = (menufield_s *)item;
+			int			newLen = strlen( f->field.buffer );
+			char		ch[2];
 
-			Menu_ItemValue( item, &newValue );
-			if ( newValue != prevValue )
+			if ( newLen > fieldLen && f->field.cursor > 0 )
 			{
-				char speech[4096];
-
-				Menu_ItemText( item, speech, sizeof( speech ) );
-				if ( speech[0] )
-					trap_Speak( speech, qtrue );
+				ch[0] = f->field.buffer[f->field.cursor - 1];
+				ch[1] = '\0';
+				trap_Speak( ch, qtrue );
 			}
+			else if ( newLen < fieldLen )
+			{
+				trap_Speak( "deleted", qtrue );
+			}
+		}
+		else
+		{
+			// any control whose spoken state changed in place
+			char after[256];
+
+			Menu_ItemText( item, after, sizeof( after ) );
+			if ( after[0] && Q_stricmp( before, after ) )
+				trap_Speak( after, qtrue );
 		}
 
 		if (sound) {

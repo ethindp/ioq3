@@ -438,6 +438,7 @@ static void UI_SPPostgameMenu_Init( void ) {
 	UI_SPPostgameMenu_Cache();
 
 	postgameMenuInfo.item_menu.generic.type			= MTYPE_BITMAP;
+	postgameMenuInfo.item_menu.generic.accessibleName = "Main menu";
 	postgameMenuInfo.item_menu.generic.name			= ART_MENU0;
 	postgameMenuInfo.item_menu.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_INACTIVE;
 	postgameMenuInfo.item_menu.generic.x			= 0;
@@ -449,6 +450,7 @@ static void UI_SPPostgameMenu_Init( void ) {
 	postgameMenuInfo.item_menu.focuspic				= ART_MENU1;
 
 	postgameMenuInfo.item_again.generic.type		= MTYPE_BITMAP;
+	postgameMenuInfo.item_again.generic.accessibleName = "Play again";
 	postgameMenuInfo.item_again.generic.name		= ART_REPLAY0;
 	postgameMenuInfo.item_again.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS|QMF_INACTIVE;
 	postgameMenuInfo.item_again.generic.x			= 320;
@@ -460,6 +462,7 @@ static void UI_SPPostgameMenu_Init( void ) {
 	postgameMenuInfo.item_again.focuspic			= ART_REPLAY1;
 
 	postgameMenuInfo.item_next.generic.type			= MTYPE_BITMAP;
+	postgameMenuInfo.item_next.generic.accessibleName = "Next level";
 	postgameMenuInfo.item_next.generic.name			= ART_NEXT0;
 	postgameMenuInfo.item_next.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_INACTIVE;
 	postgameMenuInfo.item_next.generic.x			= 640;

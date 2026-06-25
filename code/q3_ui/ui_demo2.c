@@ -161,6 +161,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.arrows.height			= ARROWS_HEIGHT;
 
 	s_demos.left.generic.type		= MTYPE_BITMAP;
+	s_demos.left.generic.accessibleName = "Previous page";
 	s_demos.left.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	s_demos.left.generic.x			= 320-ARROWS_WIDTH/2;
 	s_demos.left.generic.y			= 400;
@@ -171,6 +172,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.left.focuspic			= ART_ARROWLEFT;
 
 	s_demos.right.generic.type		= MTYPE_BITMAP;
+	s_demos.right.generic.accessibleName = "Next page";
 	s_demos.right.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	s_demos.right.generic.x			= 320;
 	s_demos.right.generic.y			= 400;
@@ -181,6 +183,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.right.focuspic			= ART_ARROWRIGHT;
 
 	s_demos.back.generic.type		= MTYPE_BITMAP;
+	s_demos.back.generic.accessibleName = "Back";
 	s_demos.back.generic.name		= ART_BACK0;
 	s_demos.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_demos.back.generic.id			= ID_BACK;
@@ -192,6 +195,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.back.focuspic			= ART_BACK1;
 
 	s_demos.go.generic.type			= MTYPE_BITMAP;
+	s_demos.go.generic.accessibleName = "Play demo";
 	s_demos.go.generic.name			= ART_GO0;
 	s_demos.go.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_demos.go.generic.id			= ID_GO;
@@ -203,6 +207,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.go.focuspic				= ART_GO1;
 
 	s_demos.list.generic.type		= MTYPE_SCROLLLIST;
+	s_demos.list.generic.accessibleName = "Demos";
 	s_demos.list.generic.flags		= QMF_PULSEIFFOCUS;
 	s_demos.list.generic.callback	= Demos_MenuEvent;
 	s_demos.list.generic.id			= ID_LIST;

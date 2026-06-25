@@ -197,6 +197,7 @@ void Options_MenuInit( void ) {
 	s_options.network.style				= UI_CENTER;
 
 	s_options.back.generic.type	    = MTYPE_BITMAP;
+	s_options.back.generic.accessibleName = "Back";
 	s_options.back.generic.name     = ART_BACK0;
 	s_options.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_options.back.generic.callback = Options_Event;

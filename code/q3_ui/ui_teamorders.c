@@ -369,6 +369,7 @@ static void UI_TeamOrdersMenu_Init( void ) {
 	teamOrdersMenuInfo.frame.height				= 332;
 
 	teamOrdersMenuInfo.list.generic.type		= MTYPE_SCROLLLIST;
+	teamOrdersMenuInfo.list.generic.accessibleName = "Orders";
 	teamOrdersMenuInfo.list.generic.flags		= QMF_PULSEIFFOCUS;
 	teamOrdersMenuInfo.list.generic.ownerdraw	= UI_TeamOrdersMenu_ListDraw;
 	teamOrdersMenuInfo.list.generic.callback	= UI_TeamOrdersMenu_ListEvent;
@@ -376,6 +377,7 @@ static void UI_TeamOrdersMenu_Init( void ) {
 	teamOrdersMenuInfo.list.generic.y			= 120;
 
 	teamOrdersMenuInfo.back.generic.type		= MTYPE_BITMAP;
+	teamOrdersMenuInfo.back.generic.accessibleName = "Back";
 	teamOrdersMenuInfo.back.generic.name		= ART_BACK0;
 	teamOrdersMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	teamOrdersMenuInfo.back.generic.callback	= UI_TeamOrdersMenu_BackEvent;

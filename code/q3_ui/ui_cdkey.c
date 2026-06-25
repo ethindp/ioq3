@@ -220,6 +220,7 @@ static void UI_CDKeyMenu_Init( void ) {
 	cdkeyMenuInfo.cdkey.generic.ownerdraw			= UI_CDKeyMenu_DrawKey;
 
 	cdkeyMenuInfo.accept.generic.type				= MTYPE_BITMAP;
+	cdkeyMenuInfo.accept.generic.accessibleName = "Accept";
 	cdkeyMenuInfo.accept.generic.name				= ART_ACCEPT0;
 	cdkeyMenuInfo.accept.generic.flags				= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	cdkeyMenuInfo.accept.generic.id					= ID_ACCEPT;
@@ -231,6 +232,7 @@ static void UI_CDKeyMenu_Init( void ) {
 	cdkeyMenuInfo.accept.focuspic					= ART_ACCEPT1;
 
 	cdkeyMenuInfo.back.generic.type					= MTYPE_BITMAP;
+	cdkeyMenuInfo.back.generic.accessibleName = "Back";
 	cdkeyMenuInfo.back.generic.name					= ART_BACK0;
 	cdkeyMenuInfo.back.generic.flags				= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	cdkeyMenuInfo.back.generic.id					= ID_BACK;

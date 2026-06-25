@@ -361,6 +361,7 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.a3d.generic.y				= y;
 */
 	soundOptionsInfo.back.generic.type			= MTYPE_BITMAP;
+	soundOptionsInfo.back.generic.accessibleName = "Back";
 	soundOptionsInfo.back.generic.name			= ART_BACK0;
 	soundOptionsInfo.back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	soundOptionsInfo.back.generic.callback		= UI_SoundOptionsMenu_Event;
@@ -372,6 +373,7 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.back.focuspic				= ART_BACK1;
 
 	soundOptionsInfo.apply.generic.type			= MTYPE_BITMAP;
+	soundOptionsInfo.apply.generic.accessibleName = "Apply";
 	soundOptionsInfo.apply.generic.name			= ART_ACCEPT0;
 	soundOptionsInfo.apply.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_HIDDEN|QMF_INACTIVE;
 	soundOptionsInfo.apply.generic.callback		= UI_SoundOptionsMenu_Event;

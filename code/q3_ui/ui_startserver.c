@@ -162,6 +162,7 @@ static void StartServer_Update( void ) {
 	int				i;
 	int				top;
 	static	char	picname[MAX_MAPSPERPAGE][64];
+	static	char	mapaccess[MAX_MAPSPERPAGE][MAX_NAMELENGTH];
 	const char		*info;
 	char			mapname[MAX_NAMELENGTH];
 
@@ -178,6 +179,8 @@ static void StartServer_Update( void ) {
 
 		Com_sprintf( picname[i], sizeof(picname[i]), "levelshots/%s", mapname );
 
+		Q_strncpyz( mapaccess[i], mapname, sizeof(mapaccess[i]) );
+
 		s_startserver.mappics[i].generic.flags &= ~QMF_HIGHLIGHT;
 		s_startserver.mappics[i].generic.name   = picname[i];
 		s_startserver.mappics[i].shader         = 0;
@@ -185,6 +188,7 @@ static void StartServer_Update( void ) {
 		// reset
 		s_startserver.mapbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
 		s_startserver.mapbuttons[i].generic.flags &= ~QMF_INACTIVE;
+		s_startserver.mapbuttons[i].generic.accessibleName = mapaccess[i];
 	}
 
 	for (; i<MAX_MAPSPERPAGE; i++)
@@ -196,6 +200,7 @@ static void StartServer_Update( void ) {
 		// disable
 		s_startserver.mapbuttons[i].generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_startserver.mapbuttons[i].generic.flags |= QMF_INACTIVE;
+		s_startserver.mapbuttons[i].generic.accessibleName = NULL;
 	}
 
 
@@ -472,6 +477,7 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.arrows.height  	   = 32;
 
 	s_startserver.prevpage.generic.type	    = MTYPE_BITMAP;
+	s_startserver.prevpage.generic.accessibleName = "Previous page";
 	s_startserver.prevpage.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_startserver.prevpage.generic.callback = StartServer_MenuEvent;
 	s_startserver.prevpage.generic.id	    = ID_PREVPAGE;
@@ -482,6 +488,7 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.prevpage.focuspic         = GAMESERVER_ARROWSL;
 
 	s_startserver.nextpage.generic.type	    = MTYPE_BITMAP;
+	s_startserver.nextpage.generic.accessibleName = "Next page";
 	s_startserver.nextpage.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_startserver.nextpage.generic.callback = StartServer_MenuEvent;
 	s_startserver.nextpage.generic.id	    = ID_NEXTPAGE;
@@ -500,6 +507,7 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.mapname.color         = text_color_normal;
 
 	s_startserver.back.generic.type	    = MTYPE_BITMAP;
+	s_startserver.back.generic.accessibleName = "Back";
 	s_startserver.back.generic.name     = GAMESERVER_BACK0;
 	s_startserver.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_startserver.back.generic.callback = StartServer_MenuEvent;
@@ -511,6 +519,7 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.back.focuspic         = GAMESERVER_BACK1;
 
 	s_startserver.next.generic.type	    = MTYPE_BITMAP;
+	s_startserver.next.generic.accessibleName = "Next";
 	s_startserver.next.generic.name     = GAMESERVER_NEXT0;
 	s_startserver.next.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_startserver.next.generic.callback = StartServer_MenuEvent;
@@ -1410,6 +1419,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	}
 
 	s_serveroptions.back.generic.type	  = MTYPE_BITMAP;
+	s_serveroptions.back.generic.accessibleName = "Back";
 	s_serveroptions.back.generic.name     = GAMESERVER_BACK0;
 	s_serveroptions.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_serveroptions.back.generic.callback = ServerOptions_Event;
@@ -1421,6 +1431,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.back.focuspic         = GAMESERVER_BACK1;
 
 	s_serveroptions.next.generic.type	  = MTYPE_BITMAP;
+	s_serveroptions.next.generic.accessibleName = "Next";
 	s_serveroptions.next.generic.name     = GAMESERVER_NEXT0;
 	s_serveroptions.next.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_INACTIVE|QMF_GRAYED|QMF_HIDDEN;
 	s_serveroptions.next.generic.callback = ServerOptions_Event;
@@ -1433,6 +1444,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.next.focuspic         = GAMESERVER_NEXT1;
 
 	s_serveroptions.go.generic.type	    = MTYPE_BITMAP;
+	s_serveroptions.go.generic.accessibleName = "Fight";
 	s_serveroptions.go.generic.name     = GAMESERVER_FIGHT0;
 	s_serveroptions.go.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_serveroptions.go.generic.callback = ServerOptions_Event;
@@ -1665,12 +1677,14 @@ static void UI_BotSelectMenu_UpdateGrid( void ) {
 				botSelectInfo.picnames[i].color = color_orange;
 			}
 			botSelectInfo.picbuttons[i].generic.flags &= ~QMF_INACTIVE;
+			botSelectInfo.picbuttons[i].generic.accessibleName = botSelectInfo.botnames[i];
 		}
 		else {
 			// dead slot
  			botSelectInfo.pics[i].generic.name         = NULL;
 			botSelectInfo.picbuttons[i].generic.flags |= QMF_INACTIVE;
 			botSelectInfo.botnames[i][0] = 0;
+			botSelectInfo.picbuttons[i].generic.accessibleName = NULL;
 		}
 
  		botSelectInfo.pics[i].generic.flags       &= ~QMF_HIGHLIGHT;
@@ -1917,6 +1931,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	botSelectInfo.arrows.height				= 32;
 
 	botSelectInfo.left.generic.type			= MTYPE_BITMAP;
+	botSelectInfo.left.generic.accessibleName = "Previous page";
 	botSelectInfo.left.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	botSelectInfo.left.generic.callback		= UI_BotSelectMenu_LeftEvent;
 	botSelectInfo.left.generic.x			= 260;
@@ -1926,6 +1941,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	botSelectInfo.left.focuspic				= BOTSELECT_ARROWSL;
 
 	botSelectInfo.right.generic.type	    = MTYPE_BITMAP;
+	botSelectInfo.right.generic.accessibleName = "Next page";
 	botSelectInfo.right.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	botSelectInfo.right.generic.callback	= UI_BotSelectMenu_RightEvent;
 	botSelectInfo.right.generic.x			= 321;
@@ -1935,6 +1951,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	botSelectInfo.right.focuspic			= BOTSELECT_ARROWSR;
 
 	botSelectInfo.back.generic.type		= MTYPE_BITMAP;
+	botSelectInfo.back.generic.accessibleName = "Back";
 	botSelectInfo.back.generic.name		= BOTSELECT_BACK0;
 	botSelectInfo.back.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	botSelectInfo.back.generic.callback	= UI_BotSelectMenu_BackEvent;
@@ -1945,6 +1962,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	botSelectInfo.back.focuspic			= BOTSELECT_BACK1;
 
 	botSelectInfo.go.generic.type		= MTYPE_BITMAP;
+	botSelectInfo.go.generic.accessibleName = "Accept";
 	botSelectInfo.go.generic.name		= BOTSELECT_ACCEPT0;
 	botSelectInfo.go.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	botSelectInfo.go.generic.callback	= UI_BotSelectMenu_SelectEvent;

@@ -113,6 +113,7 @@ static void PlayerModel_UpdateGrid( void )
 {
 	int	i;
     int	j;
+	static char	modelaccess[MAX_MODELSPERPAGE][64];
 
 	j = s_playermodel.modelpage * MAX_MODELSPERPAGE;
 	for (i=0; i<PLAYERGRID_ROWS*PLAYERGRID_COLS; i++,j++)
@@ -122,12 +123,15 @@ static void PlayerModel_UpdateGrid( void )
 			// model/skin portrait
  			s_playermodel.pics[i].generic.name         = s_playermodel.modelnames[j];
 			s_playermodel.picbuttons[i].generic.flags &= ~QMF_INACTIVE;
+			Q_strncpyz( modelaccess[i], s_playermodel.modelnames[j] + strlen("models/players/"), sizeof(modelaccess[i]) );
+			s_playermodel.picbuttons[i].generic.accessibleName = modelaccess[i];
 		}
 		else
 		{
 			// dead slot
  			s_playermodel.pics[i].generic.name         = NULL;
 			s_playermodel.picbuttons[i].generic.flags |= QMF_INACTIVE;
+			s_playermodel.picbuttons[i].generic.accessibleName = NULL;
 		}
 
  		s_playermodel.pics[i].generic.flags       &= ~QMF_HIGHLIGHT;
@@ -644,6 +648,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.arrows.height				= 32;
 
 	s_playermodel.left.generic.type			= MTYPE_BITMAP;
+	s_playermodel.left.generic.accessibleName = "Previous page";
 	s_playermodel.left.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_playermodel.left.generic.callback		= PlayerModel_MenuEvent;
 	s_playermodel.left.generic.id			= ID_PREVPAGE;
@@ -654,6 +659,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.left.focuspic				= MODEL_ARROWSL;
 
 	s_playermodel.right.generic.type	    = MTYPE_BITMAP;
+	s_playermodel.right.generic.accessibleName = "Next page";
 	s_playermodel.right.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_playermodel.right.generic.callback	= PlayerModel_MenuEvent;
 	s_playermodel.right.generic.id			= ID_NEXTPAGE;
@@ -664,6 +670,7 @@ static void PlayerModel_MenuInit( void )
 	s_playermodel.right.focuspic			= MODEL_ARROWSR;
 
 	s_playermodel.back.generic.type	    = MTYPE_BITMAP;
+	s_playermodel.back.generic.accessibleName = "Back";
 	s_playermodel.back.generic.name     = MODEL_BACK0;
 	s_playermodel.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_playermodel.back.generic.callback = PlayerModel_MenuEvent;

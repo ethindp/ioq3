@@ -180,6 +180,7 @@ static void UI_Mods_MenuInit( void ) {
 	s_mods.framer.height			= 334;
 
 	s_mods.back.generic.type		= MTYPE_BITMAP;
+	s_mods.back.generic.accessibleName = "Back";
 	s_mods.back.generic.name		= ART_BACK0;
 	s_mods.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mods.back.generic.id			= ID_BACK;
@@ -191,6 +192,7 @@ static void UI_Mods_MenuInit( void ) {
 	s_mods.back.focuspic			= ART_BACK1;
 
 	s_mods.go.generic.type			= MTYPE_BITMAP;
+	s_mods.go.generic.accessibleName = "Load mod";
 	s_mods.go.generic.name			= ART_FIGHT0;
 	s_mods.go.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_mods.go.generic.id			= ID_GO;
@@ -203,6 +205,7 @@ static void UI_Mods_MenuInit( void ) {
 
 	// scan for mods
 	s_mods.list.generic.type		= MTYPE_SCROLLLIST;
+	s_mods.list.generic.accessibleName = "Mods";
 	s_mods.list.generic.flags		= QMF_PULSEIFFOCUS|QMF_CENTER_JUSTIFY;
 	s_mods.list.generic.callback	= UI_Mods_MenuEvent;
 	s_mods.list.generic.id			= ID_LIST;

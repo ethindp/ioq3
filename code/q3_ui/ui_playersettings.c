@@ -388,7 +388,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.name.generic.type			= MTYPE_FIELD;
 	s_playersettings.name.generic.flags			= QMF_NODEFAULTINIT;
 	s_playersettings.name.generic.ownerdraw		= PlayerSettings_DrawName;
-	s_playersettings.name.generic.name = "Player name";
+	s_playersettings.name.generic.accessibleName = "Player name";
 	s_playersettings.name.field.widthInChars	= MAX_NAMELENGTH;
 	s_playersettings.name.field.maxchars		= MAX_NAMELENGTH;
 	s_playersettings.name.generic.x				= 192;
@@ -402,7 +402,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.handicap.generic.type		= MTYPE_SPINCONTROL;
 	s_playersettings.handicap.generic.flags		= QMF_NODEFAULTINIT;
 	s_playersettings.handicap.generic.id		= ID_HANDICAP;
-	s_playersettings.handicap.generic.name = "Handicap";
+	s_playersettings.handicap.generic.accessibleName = "Handicap";
 	s_playersettings.handicap.generic.ownerdraw	= PlayerSettings_DrawHandicap;
 	s_playersettings.handicap.generic.x			= 192;
 	s_playersettings.handicap.generic.y			= y;
@@ -423,13 +423,14 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.effects.generic.top		= y - 8;
 	s_playersettings.effects.generic.right		= 192 + 200;
 	s_playersettings.effects.generic.bottom		= y + 2* PROP_HEIGHT;
-	s_playersettings.effects.generic.name = "Effects";
+	s_playersettings.effects.generic.accessibleName = "Effects";
 	s_playersettings.effects.numitems			= 7;
 
 	s_playersettings.model.generic.type			= MTYPE_BITMAP;
 	s_playersettings.model.generic.name			= ART_MODEL0;
 	s_playersettings.model.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_playersettings.model.generic.id			= ID_MODEL;
+	s_playersettings.model.generic.accessibleName = "Change model";
 	s_playersettings.model.generic.callback		= PlayerSettings_MenuEvent;
 	s_playersettings.model.generic.x			= 640;
 	s_playersettings.model.generic.y			= 480-64;
@@ -449,6 +450,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.back.generic.name			= ART_BACK0;
 	s_playersettings.back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_playersettings.back.generic.id			= ID_BACK;
+	s_playersettings.back.generic.accessibleName = "Back";
 	s_playersettings.back.generic.callback		= PlayerSettings_MenuEvent;
 	s_playersettings.back.generic.x				= 0;
 	s_playersettings.back.generic.y				= 480-64;

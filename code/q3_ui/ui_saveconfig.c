@@ -146,6 +146,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.background.height			= 256;
 
 	saveConfig.savename.generic.type		= MTYPE_FIELD;
+	saveConfig.savename.generic.accessibleName = "Save name";
 	saveConfig.savename.generic.flags		= QMF_NODEFAULTINIT|QMF_UPPERCASE;
 	saveConfig.savename.generic.ownerdraw	= UI_SaveConfigMenu_SavenameDraw;
 	saveConfig.savename.field.widthInChars	= 20;
@@ -158,6 +159,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.savename.generic.bottom		= 155+72 + SMALLCHAR_HEIGHT+2;
 
 	saveConfig.back.generic.type		= MTYPE_BITMAP;
+	saveConfig.back.generic.accessibleName = "Back";
 	saveConfig.back.generic.name		= ART_BACK0;
 	saveConfig.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveConfig.back.generic.id			= ID_BACK;
@@ -169,6 +171,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.back.focuspic			= ART_BACK1;
 
 	saveConfig.save.generic.type		= MTYPE_BITMAP;
+	saveConfig.save.generic.accessibleName = "Save";
 	saveConfig.save.generic.name		= ART_SAVE0;
 	saveConfig.save.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveConfig.save.generic.id			= ID_SAVE;

@@ -285,6 +285,7 @@ static void UI_CinematicsMenu_Init( void ) {
 	}
 
 	cinematicsMenuInfo.back.generic.type		= MTYPE_BITMAP;
+	cinematicsMenuInfo.back.generic.accessibleName = "Back";
 	cinematicsMenuInfo.back.generic.name		= ART_BACK0;
 	cinematicsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	cinematicsMenuInfo.back.generic.id			= ID_BACK;

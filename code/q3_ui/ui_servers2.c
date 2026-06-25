@@ -1411,6 +1411,7 @@ static void ArenaServers_MenuInit( void ) {
 
 	y += 3 * SMALLCHAR_HEIGHT;
 	g_arenaservers.list.generic.type			= MTYPE_SCROLLLIST;
+	g_arenaservers.list.generic.accessibleName = "Server list";
 	g_arenaservers.list.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
 	g_arenaservers.list.generic.id				= ID_LIST;
 	g_arenaservers.list.generic.callback		= ArenaServers_Event;
@@ -1441,6 +1442,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.arrows.height				= 128;
 
 	g_arenaservers.up.generic.type				= MTYPE_BITMAP;
+	g_arenaservers.up.generic.accessibleName = "Scroll up";
 	g_arenaservers.up.generic.flags				= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	g_arenaservers.up.generic.callback			= ArenaServers_Event;
 	g_arenaservers.up.generic.id				= ID_SCROLL_UP;
@@ -1451,6 +1453,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.up.focuspic					= ART_ARROWS_UP;
 
 	g_arenaservers.down.generic.type			= MTYPE_BITMAP;
+	g_arenaservers.down.generic.accessibleName = "Scroll down";
 	g_arenaservers.down.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	g_arenaservers.down.generic.callback		= ArenaServers_Event;
 	g_arenaservers.down.generic.id				= ID_SCROLL_DOWN;
@@ -1477,6 +1480,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.statusbar.color	        = text_color_normal;
 
 	g_arenaservers.remove.generic.type		= MTYPE_BITMAP;
+	g_arenaservers.remove.generic.accessibleName = "Remove favorite";
 	g_arenaservers.remove.generic.name		= ART_REMOVE0;
 	g_arenaservers.remove.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.remove.generic.callback	= ArenaServers_Event;
@@ -1488,6 +1492,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.remove.focuspic			= ART_REMOVE1;
 
 	g_arenaservers.back.generic.type		= MTYPE_BITMAP;
+	g_arenaservers.back.generic.accessibleName = "Back";
 	g_arenaservers.back.generic.name		= ART_BACK0;
 	g_arenaservers.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.back.generic.callback	= ArenaServers_Event;
@@ -1499,6 +1504,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.back.focuspic			= ART_BACK1;
 
 	g_arenaservers.specify.generic.type	    = MTYPE_BITMAP;
+	g_arenaservers.specify.generic.accessibleName = "Specify server";
 	g_arenaservers.specify.generic.name		= ART_SPECIFY0;
 	g_arenaservers.specify.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.specify.generic.callback = ArenaServers_Event;
@@ -1510,6 +1516,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.specify.focuspic         = ART_SPECIFY1;
 
 	g_arenaservers.refresh.generic.type		= MTYPE_BITMAP;
+	g_arenaservers.refresh.generic.accessibleName = "Refresh";
 	g_arenaservers.refresh.generic.name		= ART_REFRESH0;
 	g_arenaservers.refresh.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.refresh.generic.callback	= ArenaServers_Event;
@@ -1521,6 +1528,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.refresh.focuspic			= ART_REFRESH1;
 
 	g_arenaservers.create.generic.type		= MTYPE_BITMAP;
+	g_arenaservers.create.generic.accessibleName = "Create server";
 	g_arenaservers.create.generic.name		= ART_CREATE0;
 	g_arenaservers.create.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.create.generic.callback	= ArenaServers_Event;
@@ -1532,6 +1540,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.create.focuspic			= ART_CREATE1;
 
 	g_arenaservers.go.generic.type			= MTYPE_BITMAP;
+	g_arenaservers.go.generic.accessibleName = "Connect";
 	g_arenaservers.go.generic.name			= ART_CONNECT0;
 	g_arenaservers.go.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	g_arenaservers.go.generic.callback		= ArenaServers_Event;

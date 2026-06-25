@@ -217,6 +217,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.rate.itemnames			= rate_items;
 
 	networkOptionsInfo.back.generic.type		= MTYPE_BITMAP;
+	networkOptionsInfo.back.generic.accessibleName = "Back";
 	networkOptionsInfo.back.generic.name		= ART_BACK0;
 	networkOptionsInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	networkOptionsInfo.back.generic.callback	= UI_NetworkOptionsMenu_Event;

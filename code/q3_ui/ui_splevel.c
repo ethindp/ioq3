@@ -746,6 +746,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_banner.style					= UI_CENTER;
 
 	levelMenuInfo.item_leftarrow.generic.type		= MTYPE_BITMAP;
+	levelMenuInfo.item_leftarrow.generic.accessibleName = "Previous";
 	levelMenuInfo.item_leftarrow.generic.name		= ART_ARROW;
 	levelMenuInfo.item_leftarrow.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_leftarrow.generic.x			= 18;
@@ -797,6 +798,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_maps[3].height				= 96;
 
 	levelMenuInfo.item_rightarrow.generic.type		= MTYPE_BITMAP;
+	levelMenuInfo.item_rightarrow.generic.accessibleName = "Next";
 	levelMenuInfo.item_rightarrow.generic.name		= ART_ARROW;
 	levelMenuInfo.item_rightarrow.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_rightarrow.generic.x			= 606;
@@ -849,6 +851,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	}
 
 	levelMenuInfo.item_back.generic.type			= MTYPE_BITMAP;
+	levelMenuInfo.item_back.generic.accessibleName = "Back";
 	levelMenuInfo.item_back.generic.name			= ART_BACK0;
 	levelMenuInfo.item_back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_back.generic.x				= 0;
@@ -860,6 +863,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_back.focuspic				= ART_BACK1;
 
 	levelMenuInfo.item_reset.generic.type			= MTYPE_BITMAP;
+	levelMenuInfo.item_reset.generic.accessibleName = "Reset";
 	levelMenuInfo.item_reset.generic.name			= ART_RESET0;
 	levelMenuInfo.item_reset.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_reset.generic.x				= 170;
@@ -871,6 +875,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_reset.focuspic				= ART_RESET1;
 
 	levelMenuInfo.item_custom.generic.type			= MTYPE_BITMAP;
+	levelMenuInfo.item_custom.generic.accessibleName = "Custom";
 	levelMenuInfo.item_custom.generic.name			= ART_CUSTOM0;
 	levelMenuInfo.item_custom.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_custom.generic.x				= 342;
@@ -882,6 +887,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_custom.focuspic				= ART_CUSTOM1;
 
 	levelMenuInfo.item_next.generic.type			= MTYPE_BITMAP;
+	levelMenuInfo.item_next.generic.accessibleName = "Fight";
 	levelMenuInfo.item_next.generic.name			= ART_FIGHT0;
 	levelMenuInfo.item_next.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_next.generic.x				= 640;

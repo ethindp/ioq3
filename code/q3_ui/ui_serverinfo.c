@@ -236,6 +236,7 @@ void UI_ServerInfoMenu( void )
 	}
 
 	s_serverinfo.back.generic.type	   = MTYPE_BITMAP;
+	s_serverinfo.back.generic.accessibleName = "Back";
 	s_serverinfo.back.generic.name     = SERVERINFO_BACK0;
 	s_serverinfo.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_serverinfo.back.generic.callback = ServerInfo_Event;

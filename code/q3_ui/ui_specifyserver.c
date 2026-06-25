@@ -150,6 +150,7 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.port.field.maxchars     = 5;
 
 	s_specifyserver.go.generic.type	    = MTYPE_BITMAP;
+	s_specifyserver.go.generic.accessibleName = "Connect";
 	s_specifyserver.go.generic.name     = SPECIFYSERVER_FIGHT0;
 	s_specifyserver.go.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_specifyserver.go.generic.callback = SpecifyServer_Event;
@@ -161,6 +162,7 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.go.focuspic         = SPECIFYSERVER_FIGHT1;
 
 	s_specifyserver.back.generic.type	  = MTYPE_BITMAP;
+	s_specifyserver.back.generic.accessibleName = "Back";
 	s_specifyserver.back.generic.name     = SPECIFYSERVER_BACK0;
 	s_specifyserver.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_specifyserver.back.generic.callback = SpecifyServer_Event;

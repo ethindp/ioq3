@@ -175,6 +175,7 @@ static void UI_DriverInfo_Menu( void )
 	s_driverinfo.framer.height  	  = 334;
 
 	s_driverinfo.back.generic.type	   = MTYPE_BITMAP;
+	s_driverinfo.back.generic.accessibleName = "Back";
 	s_driverinfo.back.generic.name     = DRIVERINFO_BACK0;
 	s_driverinfo.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_driverinfo.back.generic.callback = DriverInfo_Event;
@@ -1230,6 +1231,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.driverinfo.color            = color_red;
 
 	s_graphicsoptions.back.generic.type	    = MTYPE_BITMAP;
+	s_graphicsoptions.back.generic.accessibleName = "Back";
 	s_graphicsoptions.back.generic.name     = GRAPHICSOPTIONS_BACK0;
 	s_graphicsoptions.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_graphicsoptions.back.generic.callback = GraphicsOptions_Event;
@@ -1241,6 +1243,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.back.focuspic         = GRAPHICSOPTIONS_BACK1;
 
 	s_graphicsoptions.apply.generic.type     = MTYPE_BITMAP;
+	s_graphicsoptions.apply.generic.accessibleName = "Apply";
 	s_graphicsoptions.apply.generic.name     = GRAPHICSOPTIONS_ACCEPT0;
 	s_graphicsoptions.apply.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_HIDDEN|QMF_INACTIVE;
 	s_graphicsoptions.apply.generic.callback = GraphicsOptions_ApplyChanges;

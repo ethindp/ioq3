@@ -155,6 +155,7 @@ static void LoadConfig_MenuInit( void ) {
 	s_configs.arrows.height			= ARROWS_HEIGHT;
 
 	s_configs.left.generic.type		= MTYPE_BITMAP;
+	s_configs.left.generic.accessibleName = "Previous page";
 	s_configs.left.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	s_configs.left.generic.x		= 320-ARROWS_WIDTH/2;
 	s_configs.left.generic.y		= 400;
@@ -165,6 +166,7 @@ static void LoadConfig_MenuInit( void ) {
 	s_configs.left.focuspic			= ART_ARROWLEFT;
 
 	s_configs.right.generic.type	= MTYPE_BITMAP;
+	s_configs.right.generic.accessibleName = "Next page";
 	s_configs.right.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_MOUSEONLY;
 	s_configs.right.generic.x		= 320;
 	s_configs.right.generic.y		= 400;
@@ -175,6 +177,7 @@ static void LoadConfig_MenuInit( void ) {
 	s_configs.right.focuspic		= ART_ARROWRIGHT;
 
 	s_configs.back.generic.type		= MTYPE_BITMAP;
+	s_configs.back.generic.accessibleName = "Back";
 	s_configs.back.generic.name		= ART_BACK0;
 	s_configs.back.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_configs.back.generic.id		= ID_BACK;
@@ -186,6 +189,7 @@ static void LoadConfig_MenuInit( void ) {
 	s_configs.back.focuspic			= ART_BACK1;
 
 	s_configs.go.generic.type		= MTYPE_BITMAP;
+	s_configs.go.generic.accessibleName = "Load";
 	s_configs.go.generic.name		= ART_FIGHT0;
 	s_configs.go.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_configs.go.generic.id			= ID_GO;
@@ -198,6 +202,7 @@ static void LoadConfig_MenuInit( void ) {
 
 	// scan for configs
 	s_configs.list.generic.type		= MTYPE_SCROLLLIST;
+	s_configs.list.generic.accessibleName = "Saved configurations";
 	s_configs.list.generic.flags	= QMF_PULSEIFFOCUS;
 	s_configs.list.generic.callback	= LoadConfig_MenuEvent;
 	s_configs.list.generic.id		= ID_LIST;

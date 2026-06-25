@@ -290,6 +290,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.arrows.height  	     = 128;
 
 	addBotsMenuInfo.up.generic.type	    = MTYPE_BITMAP;
+	addBotsMenuInfo.up.generic.accessibleName = "Scroll up";
 	addBotsMenuInfo.up.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.up.generic.x		= 200;
 	addBotsMenuInfo.up.generic.y		= 128;
@@ -300,6 +301,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.up.focuspic         = ART_ARROWUP;
 
 	addBotsMenuInfo.down.generic.type	  = MTYPE_BITMAP;
+	addBotsMenuInfo.down.generic.accessibleName = "Scroll down";
 	addBotsMenuInfo.down.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.down.generic.x		  = 200;
 	addBotsMenuInfo.down.generic.y		  = 128+64;
@@ -347,6 +349,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	}
 
 	addBotsMenuInfo.go.generic.type			= MTYPE_BITMAP;
+	addBotsMenuInfo.go.generic.accessibleName = "Add bot";
 	addBotsMenuInfo.go.generic.name			= ART_FIGHT0;
 	addBotsMenuInfo.go.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.go.generic.id			= ID_GO;
@@ -358,6 +361,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.go.focuspic				= ART_FIGHT1;
 
 	addBotsMenuInfo.back.generic.type		= MTYPE_BITMAP;
+	addBotsMenuInfo.back.generic.accessibleName = "Back";
 	addBotsMenuInfo.back.generic.name		= ART_BACK0;
 	addBotsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.back.generic.id			= ID_BACK;

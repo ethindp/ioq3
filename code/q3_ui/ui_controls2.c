@@ -1257,6 +1257,7 @@ static void Controls_MenuInit( void )
 	s_controls.misc.color			= color_red;
 
 	s_controls.back.generic.type	 = MTYPE_BITMAP;
+	s_controls.back.generic.accessibleName = "Back";
 	s_controls.back.generic.name     = ART_BACK0;
 	s_controls.back.generic.flags    = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_controls.back.generic.x		 = 0;
@@ -1560,6 +1561,21 @@ static void Controls_MenuInit( void )
 	s_controls.name.string			= playername;
 	s_controls.name.style			= UI_CENTER;
 	s_controls.name.color			= text_color_normal;
+
+	// label every key-binding row for speech, taken from the bindings table
+	{
+		int				i, j;
+		menucommon_s	**controls;
+		menucommon_s	*control;
+
+		for( i = 0; i < C_MAX; i++ ) {
+			controls = g_controls[i];
+			for( j = 0; (control = controls[j]) != NULL; j++ ) {
+				if( control->type == MTYPE_ACTION )
+					control->accessibleName = g_bindings[control->id].label;
+			}
+		}
+	}
 
 	Menu_AddItem( &s_controls.menu, &s_controls.banner );
 	Menu_AddItem( &s_controls.menu, &s_controls.framel );

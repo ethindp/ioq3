@@ -181,6 +181,8 @@ typedef struct
 	void (*callback)( void *self, int event );
 	void (*statusbar)( void *self );
 	void (*ownerdraw)( void *self );
+
+	const char	*accessibleName;	// spoken label; never drawn. overrides scraped text
 } menucommon_s;
 
 typedef struct {
