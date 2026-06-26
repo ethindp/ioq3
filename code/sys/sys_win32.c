@@ -100,7 +100,7 @@ static char *Sys_DefaultHomePath( void )
 						NULL, 0, szPath ) ) )
 		{
 			Com_Printf("Unable to detect CSIDL_APPDATA\n");
-			return NULL;
+			return homePath;
 		}
 		
 		Com_sprintf(homePath, sizeof(homePath), "%s%c", szPath, PATH_SEP);

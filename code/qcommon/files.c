@@ -530,6 +530,34 @@ char *FS_BaseDir_BuildOSPath( const char *base, const char *qpath ) {
 	return ospath;
 }
 
+/*
+=================
+FS_IsAbsolutePath
+
+True only for a fully-qualified OS path. A relative or garbage string handed to
+FS_CreatePath would otherwise create junk directories in the working directory.
+=================
+*/
+static qboolean FS_IsAbsolutePath( const char *path )
+{
+	if ( !path || !path[0] ) {
+		return qfalse;
+	}
+#ifdef _WIN32
+	// drive-letter "C:\..." / "C:/..."
+	if ( ( ( path[0] >= 'A' && path[0] <= 'Z' ) || ( path[0] >= 'a' && path[0] <= 'z' ) )
+			&& path[1] == ':' ) {
+		return qtrue;
+	}
+	// UNC "\\server\..." (either separator style)
+	if ( ( path[0] == '\\' || path[0] == '/' ) && ( path[1] == '\\' || path[1] == '/' ) ) {
+		return qtrue;
+	}
+	return qfalse;
+#else
+	return (qboolean)( path[0] == '/' );
+#endif
+}
 
 /*
 ============
@@ -550,6 +578,11 @@ qboolean FS_CreatePath (const char *OSPath) {
 	// FIXME: is c: allowed???
 	if ( strstr( OSPath, ".." ) || strstr( OSPath, "::" ) ) {
 		Com_Printf( "WARNING: refusing to create relative path \"%s\"\n", OSPath );
+		return qtrue;
+	}
+
+	if ( !FS_IsAbsolutePath( OSPath ) ) {
+		Com_Printf( S_COLOR_YELLOW "WARNING: refusing to create non-absolute path \"%s\"\n", OSPath );
 		return qtrue;
 	}
 
@@ -3414,9 +3447,19 @@ static void FS_Startup( const char *gameName )
 		Com_Error( ERR_DROP, "Invalid fs_game '%s'", fs_gamedirvar->string );
 	}
 
-	FS_CreatePath(fs_homeconfigpath->string);
-	FS_CreatePath(fs_homedatapath->string);
-	FS_CreatePath(fs_homestatepath->string);
+{
+		char homeDir[ MAX_OSPATH ];
+
+		// FS_CreatePath only makes the *parent* dirs of a file path, so append a
+		// separator to turn each home directory into a non-final segment that
+		// actually gets created.
+		Com_sprintf( homeDir, sizeof( homeDir ), "%s%c", fs_homeconfigpath->string, PATH_SEP );
+		FS_CreatePath( homeDir );
+		Com_sprintf( homeDir, sizeof( homeDir ), "%s%c", fs_homedatapath->string, PATH_SEP );
+		FS_CreatePath( homeDir );
+		Com_sprintf( homeDir, sizeof( homeDir ), "%s%c", fs_homestatepath->string, PATH_SEP );
+		FS_CreatePath( homeDir );
+	}
 
 	FS_AddGameDirectories(gameName);
 
