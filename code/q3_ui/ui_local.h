@@ -182,7 +182,8 @@ typedef struct
 	void (*statusbar)( void *self );
 	void (*ownerdraw)( void *self );
 
-	const char	*accessibleName;	// spoken label; never drawn. overrides scraped text
+	// Label used for accessibility purposes. Never displayed on-screen.
+	const char	*accessibleName;
 } menucommon_s;
 
 typedef struct {

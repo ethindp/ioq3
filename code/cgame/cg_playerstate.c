@@ -501,6 +501,18 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
 		// make sure we don't get any unwanted transition effects
 		*ops = *ps;
 	}
+	// announce the weapon now being wielded
+	if ( ps->weapon != ops->weapon
+		&& ps->weapon > WP_NONE && ps->weapon < WP_NUM_WEAPONS
+		&& !( cg.itemPickupTime == cg.time
+			&& bg_itemlist[cg.itemPickup].giType == IT_WEAPON
+			&& bg_itemlist[cg.itemPickup].giTag == ps->weapon )
+		&& ( ps->pm_type == PM_NORMAL || ops->pm_type == PM_DEAD ) ) {
+		gitem_t *wi = BG_FindItemForWeapon( ps->weapon );
+		if ( wi ) {
+			trap_Speak( wi->pickup_name, qtrue );
+		}
+	}
 
 	// damage events (player is getting wounded)
 	if ( ps->damageEvent != ops->damageEvent && ps->damageCount ) {
