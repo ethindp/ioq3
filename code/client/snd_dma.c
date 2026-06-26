@@ -1534,6 +1534,9 @@ void S_FreeOldestSound( void ) {
 	sfx->soundData = NULL;
 }
 
+static void S_Base_TargetTone( qboolean active, float gain, float pitch, sfxHandle_t sfx ) { }
+static void S_Base_EnableHRTF( qboolean enable ) { }
+
 // =======================================================================
 // Shutdown sound engine
 // =======================================================================
@@ -1606,7 +1609,8 @@ qboolean S_Base_Init( soundInterface_t *si ) {
 	si->ClearSoundBuffer = S_Base_ClearSoundBuffer;
 	si->SoundInfo = S_Base_SoundInfo;
 	si->SoundList = S_Base_SoundList;
-
+	si->TargetTone = S_Base_TargetTone;
+	si->EnableHRTF = S_Base_EnableHRTF;
 #ifdef USE_VOIP
 	si->StartCapture = S_Base_StartCapture;
 	si->AvailableCaptureSamples = S_Base_AvailableCaptureSamples;

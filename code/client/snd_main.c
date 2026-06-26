@@ -99,6 +99,20 @@ void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 	}
 }
 
+void S_TargetTone( qboolean active, float gain, float pitch, sfxHandle_t sfx )
+{
+	if ( si.TargetTone ) {
+		si.TargetTone( active, gain, pitch, sfx );
+	}
+}
+
+void S_EnableHRTF( qboolean enable )
+{
+	if ( si.EnableHRTF ) {
+		si.EnableHRTF( enable );
+	}
+}
+
 /*
 =================
 S_StartBackgroundTrack

@@ -450,3 +450,7 @@ qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 ) {
 void trap_Speak( const char *text, qboolean interrupt ) {
 	syscall( CG_SPEAK, text, interrupt );
 }
+
+void trap_S_TargetTone( qboolean active, float gain, float pitch, sfxHandle_t sfx ) {
+	syscall( CG_S_TARGETTONE, active, PASSFLOAT(gain), PASSFLOAT(pitch), sfx );
+}

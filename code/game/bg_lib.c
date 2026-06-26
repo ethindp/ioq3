@@ -2117,3 +2117,105 @@ int sscanf( const char *buffer, const char *fmt, ... ) {
 }
 
 #endif
+
+#ifndef M_LN2
+#define M_LN2		0.69314718055994530942
+#endif
+#ifndef M_LOG2E
+#define M_LOG2E		1.44269504088896340736
+#endif
+
+/*
+=================
+log
+
+Natural log. Range-reduce x = m * 2^k into m in [1/sqrt2, sqrt2] by halving/
+doubling (exact, just exponent shifts), then the fast-converging atanh series
+log(m) = 2*(s + s^3/3 + s^5/5 + ...), s = (m-1)/(m+1). At the reduced range
+|s| <= 0.172, so five terms land ~1e-9 -- below float epsilon.
+=================
+*/
+double log( double x ) {
+	double	s, s2, poly, k;
+
+	if ( x <= 0 ) {
+		return 0;			// domain error; bg_lib convention is return 0
+	}
+
+	k = 0;
+	while ( x > 1.41421356237 ) {
+		x *= 0.5;
+		k += 1.0;
+	}
+	while ( x < 0.70710678118 ) {
+		x *= 2.0;
+		k -= 1.0;
+	}
+	s  = ( x - 1.0 ) / ( x + 1.0 );
+	s2 = s * s;
+	poly = 1.0 + s2 * ( 1.0/3.0 + s2 * ( 1.0/5.0 + s2 * ( 1.0/7.0 + s2 * (1.0/9.0) ) ) );
+	return 2.0 * s * poly + k * M_LN2;
+}
+
+/*
+=================
+exp
+
+Reduce exp(x) = 2^(x/ln2) = 2^n * 2^f, n = nearest int, f in [-0.5,0.5].
+2^f = exp(f*ln2) with |f*ln2| <= 0.347 -> Taylor to 9 terms is ~1e-10.
+2^n is exact repeated multiply by 2 (no rounding error).
+=================
+*/
+double exp( double x ) {
+	double	t, f, term, sum;
+	int		n, i;
+
+	if ( x == 0 ) {
+		return 1.0;
+	}
+
+	t = x * M_LOG2E;
+	n = (int)( t + ( t >= 0 ? 0.5 : -0.5 ) );	// round to nearest
+	f = ( t - n ) * M_LN2;						// residual, |f| <= ln2/2
+	sum = 1.0;
+	term = 1.0;
+	for ( i = 1; i <= 9; i++ ) {
+		term *= f / i;
+		sum  += term;
+	}
+	if ( n > 0 )      {
+		for ( i = 0; i < n;  i++ )
+			sum *= 2.0;
+	}
+	else if ( n < 0 ) {
+		for ( i = 0; i < -n; i++ )
+			sum *= 0.5;
+	}
+	return sum;
+}
+
+/*
+=================
+pow
+
+x^y = exp(y * log(x)) for x > 0. Negative base only meaningful for integer
+exponent, handled by repeated multiply.
+=================
+*/
+double pow( double x, double y ) {
+	if ( y == 0 ) return 1.0;
+	if ( x == 0 ) return 0.0;
+	if ( x < 0 ) {
+		int		iy = (int)y;
+		int		i;
+		double	base = x, r = 1.0;
+		if ( iy < 0 ) {
+			base = 1.0 / x;
+			iy = -iy;
+	}
+		for ( i = 0; i < iy; i++ )
+			r *= base;
+		return r;
+	}
+	return exp( y * log( x ) );
+}

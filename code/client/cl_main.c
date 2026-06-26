@@ -1424,7 +1424,7 @@ void CL_Disconnect( qboolean showMainMenu ) {
 		FS_FCloseFile( clc.demofile );
 		clc.demofile = 0;
 	}
-
+	S_EnableHRTF( qfalse );
 	if ( uivm && showMainMenu ) {
 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
 	}

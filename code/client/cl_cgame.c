@@ -695,6 +695,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_SPEAK:
 		CL_Prism_Speak( VMA(1), args[2] );
 		return 0;
+	case CG_S_TARGETTONE:
+		S_TargetTone( args[1], VMF(2), VMF(3), args[4] );
+		return 0;
 
 	default:
 	        assert(0);
@@ -746,6 +749,9 @@ void CL_InitCGame( void ) {
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
 	VM_Call( cgvm, CG_INIT, clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum );
+
+	// Enable HRTF for binaural audio
+	S_EnableHRTF( qtrue );
 
 	// reset any CVAR_CHEAT cvars registered by cgame
 	if ( !clc.demoplaying && !cl_connectedToCheatServer )

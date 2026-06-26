@@ -553,7 +553,7 @@ static consoleCommand_t	commands[] = {
 	{ "startOrbit", CG_StartOrbit_f },
 	//{ "camera", CG_Camera_f },
 	{ "loaddeferred", CG_LoadDeferredPlayers },
-	{ "tts_status", CG_TTSStatus_f }	
+	{ "tts_status", CG_TTSStatus_f },
 };
 
 

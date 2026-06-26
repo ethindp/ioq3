@@ -165,6 +165,7 @@ typedef enum {
 	// 1.32
 	CG_FS_SEEK,
 	CG_SPEAK,
+	CG_S_TARGETTONE,
 
 /*
 	CG_LOADCAMERA,

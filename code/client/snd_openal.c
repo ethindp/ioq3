@@ -44,12 +44,14 @@ cvar_t *s_alDevice;
 cvar_t *s_alInputDevice;
 cvar_t *s_alAvailableDevices;
 cvar_t *s_alAvailableInputDevices;
+cvar_t *s_alHRTF;
 
 static qboolean enumeration_ext = qfalse;
 static qboolean enumeration_all_ext = qfalse;
 #ifdef USE_VOIP
 static qboolean capture_ext = qfalse;
 #endif
+static ALuint		targetSource = 0;
 
 /*
 =================
@@ -2462,6 +2464,11 @@ static
 void S_AL_Shutdown( void )
 {
 	// Shut down everything
+	if ( targetSource ) {
+		qalSourceStop( targetSource );
+		qalDeleteSources( 1, &targetSource );
+		targetSource = 0;
+	}
 	int i;
 	for (i = 0; i < MAX_RAW_STREAMS; i++)
 		S_AL_StreamDie(i);
@@ -2491,6 +2498,71 @@ void S_AL_Shutdown( void )
 }
 
 #endif
+
+#ifndef ALC_HRTF_SOFT
+#define ALC_HRTF_SOFT 0x1992
+#endif
+typedef ALCboolean (ALC_APIENTRY *LPALCRESETDEVICESOFT)( ALCdevice *device, const ALCint *attrs );
+static LPALCRESETDEVICESOFT qalcResetDeviceSOFT;
+
+/*
+=================
+S_AL_TargetTone
+=================
+*/
+static void S_AL_TargetTone( qboolean active, float gain, float pitch, sfxHandle_t sfx )
+{
+	ALuint	buf;
+	if ( !active ) {
+		if ( targetSource )
+			qalSourceStop( targetSource );
+		return;
+	}
+	if ( sfx <= 0 )
+		return;
+	if ( !targetSource ) {
+		qalGenSources( 1, &targetSource );
+		if ( !targetSource )
+			return;
+		qalSourcei(  targetSource, AL_SOURCE_RELATIVE, AL_TRUE );
+		qalSource3f( targetSource, AL_POSITION, 0.0f, 0.0f, 0.0f );
+		qalSourcei(  targetSource, AL_LOOPING, AL_FALSE );	// one-shot heartbeat now
+	}
+	S_AL_BufferUse( sfx );
+	buf = S_AL_BufferGet( sfx );
+	qalSourceStop( targetSource );				// restart cleanly each beat
+	qalSourcei( targetSource, AL_BUFFER, buf );
+	qalSourcef( targetSource, AL_GAIN, gain );
+	qalSourcef( targetSource, AL_PITCH, pitch );
+	qalSourcePlay( targetSource );				// fire one ping
+}
+
+/*
+=================
+S_AL_EnableHRTF
+
+Toggle binaural HRTF mixing at runtime via ALC_SOFT_HRTF.
+=================
+*/
+static void S_AL_EnableHRTF( qboolean enable )
+{
+	ALCint	attrs[3];
+	if ( !alDevice )
+		return;
+	if ( s_alHRTF && !s_alHRTF->integer )
+		enable = qfalse;
+	if ( !qalcResetDeviceSOFT ) {
+		qalcResetDeviceSOFT = (LPALCRESETDEVICESOFT)qalcGetProcAddress( alDevice, "alcResetDeviceSOFT" );
+		if ( !qalcResetDeviceSOFT ) {
+			Com_DPrintf( "OpenAL: ALC_SOFT_HRTF not available\n" );
+			return;
+		}
+	}
+	attrs[0] = ALC_HRTF_SOFT;
+	attrs[1] = enable ? ALC_TRUE : ALC_FALSE;
+	attrs[2] = 0;
+	qalcResetDeviceSOFT( alDevice, attrs );
+}
 
 /*
 =================
@@ -2531,6 +2603,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 
 	s_alInputDevice = Cvar_Get( "s_alInputDevice", "", CVAR_ARCHIVE | CVAR_LATCH );
 	s_alDevice = Cvar_Get("s_alDevice", "", CVAR_ARCHIVE | CVAR_LATCH);
+	s_alHRTF = Cvar_Get( "s_alHRTF", "0", CVAR_ARCHIVE );
 
 	// Load QAL
 	if( !QAL_Init( s_alDriver->string ) )
@@ -2729,7 +2802,8 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->ClearSoundBuffer = S_AL_ClearSoundBuffer;
 	si->SoundInfo = S_AL_SoundInfo;
 	si->SoundList = S_AL_SoundList;
-
+	si->TargetTone = S_AL_TargetTone;
+	si->EnableHRTF = S_AL_EnableHRTF;
 #ifdef USE_VOIP
 	si->StartCapture = S_AL_StartCapture;
 	si->AvailableCaptureSamples = S_AL_AvailableCaptureSamples;

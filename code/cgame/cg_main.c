@@ -199,6 +199,10 @@ vmCvar_t	cg_recordSPDemo;
 vmCvar_t	cg_recordSPDemoName;
 vmCvar_t	cg_obeliskRespawnDelay;
 #endif
+vmCvar_t	cg_targeting;
+vmCvar_t	cg_targetMode;
+vmCvar_t	cg_targetInterval;
+vmCvar_t	cg_targetMaxPitch;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -320,8 +324,12 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_oldRail, "cg_oldRail", "1", CVAR_ARCHIVE},
 	{ &cg_oldRocket, "cg_oldRocket", "1", CVAR_ARCHIVE},
 	{ &cg_oldPlasma, "cg_oldPlasma", "1", CVAR_ARCHIVE},
-	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE}
+	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
+	{ &cg_targeting, "cg_targeting", "1", CVAR_ARCHIVE },
+	{ &cg_targetMode, "cg_targetMode", "0", CVAR_ARCHIVE },	// 0 = radar (nearest), 1 = scope (best-aligned)
+	{ &cg_targetInterval, "cg_targetInterval", "500", CVAR_ARCHIVE },	// heartbeat period, ms
+	{ &cg_targetMaxPitch, "cg_targetMaxPitch", "1.5", CVAR_ARCHIVE },
 };
 
 static int  cvarTableSize = ARRAY_LEN( cvarTable );
@@ -788,6 +796,8 @@ static void CG_RegisterSounds( void ) {
 	trap_S_RegisterSound("sound/player/janet/taunt.wav", qfalse );
 #endif
 
+	cgs.media.targetPingSound = trap_S_RegisterSound( "sound/feedback/target_ping.wav", qfalse );
+	cgs.media.targetLockSound = trap_S_RegisterSound( "sound/feedback/target_lock.wav", qfalse );
 }
 
 

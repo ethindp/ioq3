@@ -640,7 +640,9 @@ typedef struct {
 	char			testModelName[MAX_QPATH];
 	qboolean		testGun;
 	qboolean speakScores;
-
+	int			targetEnt;		// currently tracked enemy client num, -1 = none
+	qboolean	targetLocked;	// firing-solution trigger (hysteresis)
+	int			lastTargetPing;		// cg.time of the last heartbeat
 } cg_t;
 
 
@@ -983,7 +985,8 @@ typedef struct {
 	sfxHandle_t	wstbimpmSound;
 	sfxHandle_t	wstbimpdSound;
 	sfxHandle_t	wstbactvSound;
-
+	sfxHandle_t	targetPingSound;
+	sfxHandle_t	targetLockSound;
 } cgMedia_t;
 
 
@@ -1192,6 +1195,10 @@ extern  vmCvar_t		cg_recordSPDemo;
 extern  vmCvar_t		cg_recordSPDemoName;
 extern	vmCvar_t		cg_obeliskRespawnDelay;
 #endif
+extern vmCvar_t		cg_targeting;
+extern vmCvar_t		cg_targetMode;
+extern vmCvar_t		cg_targetInterval;
+extern vmCvar_t		cg_targetMaxPitch;
 
 //
 // cg_main.c
@@ -1283,6 +1290,7 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean force2D );
 void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team );
+void CG_UpdateTargeting( void );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle);
 void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style);
 int CG_Text_Width(const char *text, float scale, int limit);
@@ -1676,6 +1684,8 @@ qboolean	trap_getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
 qboolean	trap_GetEntityToken( char *buffer, int bufferSize );
 
 void		trap_Speak( const char *text, qboolean interrupt );
+
+void		trap_S_TargetTone( qboolean active, float gain, float pitch, sfxHandle_t sfx );
 
 void	CG_ClearParticles (void);
 void	CG_AddParticles (void);

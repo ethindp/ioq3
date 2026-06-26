@@ -57,6 +57,8 @@ void S_Update( void );
 void S_DisableSounds( void );
 
 void S_BeginRegistration( void );
+void S_TargetTone( qboolean active, float gain, float pitch, sfxHandle_t sfx );
+void S_EnableHRTF( qboolean enable );
 
 // RegisterSound will allways return a valid sample, even if it
 // has to create a placeholder.  This prevents continuous filesystem

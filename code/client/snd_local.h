@@ -146,6 +146,8 @@ typedef struct
 	void (*ClearSoundBuffer)( void );
 	void (*SoundInfo)( void );
 	void (*SoundList)( void );
+	void (*TargetTone)( qboolean active, float gain, float pitch, sfxHandle_t sfx );
+	void (*EnableHRTF)( qboolean enable );
 #ifdef USE_VOIP
 	void (*StartCapture)( void );
 	int (*AvailableCaptureSamples)( void );
