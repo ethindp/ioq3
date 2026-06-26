@@ -489,6 +489,7 @@ void CL_Prism_Init( void );
 void CL_Prism_Shutdown( void );
 void CL_Prism_Print( const char *txt );
 void CL_Prism_Speak( const char *text, qboolean interrupt );
+void CL_Prism_Speak_Char(char ch, qboolean interrupt);
 
 //
 // cl_input

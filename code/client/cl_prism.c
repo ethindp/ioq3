@@ -189,3 +189,10 @@ void CL_Prism_Speak( const char *text, qboolean interrupt ) {
 		(void)prism_backend_speak( prismBackend, clean, interrupt );
 	}
 }
+
+void CL_Prism_Speak_Char(char ch, qboolean interrupt) {
+	char txt[2];
+	txt[0] = ch;
+	txt[1] = '\0';
+	CL_Prism_Speak(txt, interrupt);
+}

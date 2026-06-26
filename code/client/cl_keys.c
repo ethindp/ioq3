@@ -475,6 +475,7 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 	switch ( key ) {
 		case K_DEL:
 			if ( edit->cursor < len ) {
+				CL_Prism_Speak_Char(edit->buffer[edit->cursor + 1], qtrue);
 				memmove( edit->buffer + edit->cursor, 
 					edit->buffer + edit->cursor + 1, len - edit->cursor );
 			}
@@ -483,21 +484,25 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 		case K_RIGHTARROW:
 			if ( edit->cursor < len ) {
 				edit->cursor++;
+				CL_Prism_Speak_Char(edit->buffer[edit->cursor], qtrue);
 			}
 			break;
 
 		case K_LEFTARROW:
 			if ( edit->cursor > 0 ) {
 				edit->cursor--;
+				CL_Prism_Speak_Char(edit->buffer[edit->cursor], qtrue);
 			}
 			break;
 
 		case K_HOME:
 			edit->cursor = 0;
+			CL_Prism_Speak_Char(edit->buffer[edit->cursor], qtrue);
 			break;
 
 		case K_END:
 			edit->cursor = len;
+			CL_Prism_Speak_Char(edit->buffer[edit->cursor - 1], qtrue);
 			break;
 
 		case K_INS:
@@ -574,6 +579,7 @@ void Field_CharEvent( field_t *edit, int ch ) {
 			return;
 		edit->buffer[edit->cursor] = ch;
 		edit->cursor++;
+		CL_Prism_Speak_Char(ch, qtrue);
 	} else {	// insert mode
 		// - 2 to leave room for the leading slash and trailing \0
 		if ( len == MAX_EDIT_LINE - 2 ) {
@@ -583,6 +589,7 @@ void Field_CharEvent( field_t *edit, int ch ) {
 			edit->buffer + edit->cursor, len + 1 - edit->cursor );
 		edit->buffer[edit->cursor] = ch;
 		edit->cursor++;
+		CL_Prism_Speak_Char(ch, qtrue);
 	}
 
 
@@ -684,6 +691,7 @@ void Console_Key (int key) {
 			historyLine--;
 		}
 		g_consoleField = historyEditLines[ historyLine % COMMAND_HISTORY ];
+		CL_Prism_Speak(g_consoleField.buffer, qtrue);
 		return;
 	}
 
@@ -697,6 +705,7 @@ void Console_Key (int key) {
 			return;
 		}
 		g_consoleField = historyEditLines[ historyLine % COMMAND_HISTORY ];
+		CL_Prism_Speak(g_consoleField.buffer, qtrue);
 		return;
 	}
 

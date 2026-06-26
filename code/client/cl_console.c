@@ -84,6 +84,7 @@ void Con_ToggleConsole_f (void) {
 
 	Con_ClearNotify ();
 	Key_SetCatcher( Key_GetCatcher( ) ^ KEYCATCH_CONSOLE );
+	CL_Prism_Speak( (Key_GetCatcher( ) & KEYCATCH_CONSOLE ) != 0 ? "Entering console" : "Exiting console", qtrue);
 }
 
 /*
