@@ -104,7 +104,10 @@ static void CG_ParseScores( void ) {
 #ifdef MISSIONPACK
 	CG_SetScoreSelection(NULL);
 #endif
-
+	if ( cg.speakScores ) {
+		cg.speakScores = qfalse;
+		CG_SpeakScores();
+	}
 }
 
 /*

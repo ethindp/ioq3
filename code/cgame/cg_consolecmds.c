@@ -94,6 +94,7 @@ static void CG_ScoresDown_f( void ) {
 		// so request new ones
 		cg.scoresRequestTime = cg.time;
 		trap_SendClientCommand( "score" );
+		cg.speakScores = qtrue;
 
 		// leave the current scores up if they were already
 		// displayed, but if this is the first hit, clear them out
@@ -105,6 +106,7 @@ static void CG_ScoresDown_f( void ) {
 		// show the cached contents even if they just pressed if it
 		// is within two seconds
 		cg.showScores = qtrue;
+		CG_SpeakScores();
 	}
 }
 
@@ -444,6 +446,56 @@ static void CG_Camera_f( void ) {
 }
 */
 
+static void CG_TTSStatus_f( void ) {
+	playerState_t	*ps;
+	char			buf[16384];
+	int				i, weap, val, msec, mins, secs;
+	gitem_t			*it;
+
+	if ( !cg.snap ) return;
+	ps = &cg.snap->ps;
+	buf[0] = '\0';
+	Q_strcat( buf, sizeof( buf ), va( "Health %i, armor %i. ",
+		ps->stats[STAT_HEALTH], ps->stats[STAT_ARMOR] ) );
+	weap = ps->weapon;
+	if ( weap > WP_NONE && weap < WP_NUM_WEAPONS ) {
+		it = BG_FindItemForWeapon( weap );
+		Q_strcat( buf, sizeof( buf ), va( "%s %i rounds. ",
+			it ? it->pickup_name : "weapon", ps->ammo[weap] ) );
+	}
+	val = ps->stats[STAT_HOLDABLE_ITEM];
+	if ( val > 0 && val < bg_numItems ) {
+		Q_strcat( buf, sizeof( buf ), va( "Holding %s. ",
+			bg_itemlist[val].pickup_name ) );
+	}
+	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
+		if ( !ps->powerups[i] ) continue;
+		it = BG_FindItemForPowerup( i );
+		if ( !it ) continue;
+		if ( ps->powerups[i] == INT_MAX ) {
+			Q_strcat( buf, sizeof( buf ), va( "%s. ", it->pickup_name ) );
+		} else {
+			int t = ps->powerups[i] - cg.time;
+			if ( t > 0 ) {
+				Q_strcat( buf, sizeof( buf ), va( "%s %i seconds. ",
+					it->pickup_name, t / 1000 ) );
+			}
+		}
+	}
+	Q_strcat( buf, sizeof( buf ), va( "Score %i", ps->persistant[PERS_SCORE] ) );
+	if ( cgs.gametype >= GT_TEAM && cgs.capturelimit ) {
+		Q_strcat( buf, sizeof( buf ), va( " of %i", cgs.capturelimit ) );
+	} else if ( cgs.fraglimit ) {
+		Q_strcat( buf, sizeof( buf ), va( " of %i", cgs.fraglimit ) );
+	}
+	Q_strcat( buf, sizeof( buf ), ". " );
+	msec = cg.time - cgs.levelStartTime;
+	secs = msec / 1000;
+	mins = secs / 60;
+	secs -= mins * 60;
+	Q_strcat( buf, sizeof( buf ), va( "Time %i:%02i.", mins, secs ) );
+	trap_Speak( buf, qtrue );
+}
 
 typedef struct {
 	char	*cmd;
@@ -500,7 +552,8 @@ static consoleCommand_t	commands[] = {
 #endif
 	{ "startOrbit", CG_StartOrbit_f },
 	//{ "camera", CG_Camera_f },
-	{ "loaddeferred", CG_LoadDeferredPlayers }	
+	{ "loaddeferred", CG_LoadDeferredPlayers },
+	{ "tts_status", CG_TTSStatus_f }	
 };
 
 

@@ -475,7 +475,7 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 	switch ( key ) {
 		case K_DEL:
 			if ( edit->cursor < len ) {
-				CL_Prism_Speak_Char(edit->buffer[edit->cursor + 1], qtrue);
+				CL_Prism_Speak_Char(edit->buffer[edit->cursor], qtrue);
 				memmove( edit->buffer + edit->cursor, 
 					edit->buffer + edit->cursor + 1, len - edit->cursor );
 			}
@@ -485,6 +485,8 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 			if ( edit->cursor < len ) {
 				edit->cursor++;
 				CL_Prism_Speak_Char(edit->buffer[edit->cursor], qtrue);
+			} else {
+				CL_Prism_Speak("End of line", qtrue);
 			}
 			break;
 
@@ -492,17 +494,20 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 			if ( edit->cursor > 0 ) {
 				edit->cursor--;
 				CL_Prism_Speak_Char(edit->buffer[edit->cursor], qtrue);
+			} else {
+				CL_Prism_Speak("Beginning of line", qtrue);
 			}
 			break;
 
 		case K_HOME:
 			edit->cursor = 0;
-			CL_Prism_Speak_Char(edit->buffer[edit->cursor], qtrue);
+			CL_Prism_Speak_Char(edit->buffer[edit->cursor] ? edit->buffer[edit->cursor] : "Blank", qtrue);
 			break;
 
 		case K_END:
 			edit->cursor = len;
-			CL_Prism_Speak_Char(edit->buffer[edit->cursor - 1], qtrue);
+			if ( len > 0 )
+				CL_Prism_Speak_Char( edit->buffer[len - 1] ? edit->buffer[len - 1] : "Blank", qtrue );
 			break;
 
 		case K_INS:
@@ -543,6 +548,7 @@ void Field_CharEvent( field_t *edit, int ch ) {
 
 	if ( ch == 'h' - 'a' + 1 )	{	// ctrl-h is backspace
 		if ( edit->cursor > 0 ) {
+			CL_Prism_Speak_Char( edit->buffer[edit->cursor - 1], qtrue);
 			memmove( edit->buffer + edit->cursor - 1, 
 				edit->buffer + edit->cursor, len + 1 - edit->cursor );
 			edit->cursor--;

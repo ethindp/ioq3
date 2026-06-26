@@ -532,3 +532,28 @@ void CG_DrawTourneyScoreboard( void ) {
 
 }
 
+/*
+=================
+CG_SpeakScores
+
+Speaks the board the way a sighted player reads it: team totals in team
+modes, then each client's name and frags in the server's rank order.
+=================
+*/
+void CG_SpeakScores( void ) {
+	char	buf[16384];
+	int		i;
+	buf[0] = '\0';
+	if ( cgs.gametype >= GT_TEAM ) {
+		Q_strcat( buf, sizeof( buf ),
+			va( "Red %i, Blue %i. ", cg.teamScores[0], cg.teamScores[1] ) );
+	}
+	for ( i = 0 ; i < cg.numScores ; i++ ) {
+		Q_strcat( buf, sizeof( buf ),
+			va( "%s %i. ",
+				cgs.clientinfo[ cg.scores[i].client ].name,
+				cg.scores[i].score ) );
+	}
+	if ( buf[0] )
+		trap_Speak( buf, qtrue );
+}

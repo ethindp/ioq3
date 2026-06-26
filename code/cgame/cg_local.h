@@ -639,6 +639,7 @@ typedef struct {
 	refEntity_t		testModelEntity;
 	char			testModelName[MAX_QPATH];
 	qboolean		testGun;
+	qboolean speakScores;
 
 } cg_t;
 
@@ -1204,6 +1205,7 @@ void QDECL CG_Error( const char *msg, ... ) Q_NO_RETURN Q_PRINTF_FUNC(1, 2);
 void CG_StartMusic( void );
 
 void CG_UpdateCvars( void );
+void CG_SpeakScores( void );
 
 int CG_CrosshairPlayer( void );
 int CG_LastAttacker( void );
