@@ -131,6 +131,7 @@ void Login_MenuInit( void ) {
 	s_login.name_box.generic.flags		= 0;
 	s_login.name_box.generic.x			= 330;
 	s_login.name_box.generic.y			= y;
+	s_login.name_box.generic.accessibleName = "Name:";
 	s_login.name_box.field.widthInChars	= 16;
 	s_login.name_box.field.maxchars		= 16;
 	y += 20;
@@ -150,6 +151,7 @@ void Login_MenuInit( void ) {
 	s_login.password_box.generic.flags		= 0;
 	s_login.password_box.generic.x			= 330;
 	s_login.password_box.generic.y			= y;
+	s_login.password_box.generic.accessibleName = "Password:";
 	s_login.password_box.field.widthInChars	= 16;
 	s_login.password_box.field.maxchars		= 16;
 	y += 40;
