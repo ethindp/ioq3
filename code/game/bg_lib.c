@@ -2116,8 +2116,6 @@ int sscanf( const char *buffer, const char *fmt, ... ) {
 	return count;
 }
 
-#endif
-
 #ifndef M_LN2
 #define M_LN2		0.69314718055994530942
 #endif
@@ -2219,3 +2217,5 @@ double pow( double x, double y ) {
 	}
 	return exp( y * log( x ) );
 }
+
+#endif
