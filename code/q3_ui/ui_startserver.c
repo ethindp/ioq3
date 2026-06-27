@@ -1385,7 +1385,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.player0.generic.flags			= QMF_SMALLFONT;
 	s_serveroptions.player0.generic.x				= 32 + SMALLCHAR_WIDTH;
 	s_serveroptions.player0.generic.y				= y;
-	s_serveroptions.player0.generic.accessibleName = "Player 2";
+	s_serveroptions.player0.generic.accessibleName = "Player";
 	s_serveroptions.player0.color					= color_orange;
 	s_serveroptions.player0.style					= UI_LEFT|UI_SMALLFONT;
 
@@ -1414,7 +1414,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.playerName[n].generic.bottom	= s_serveroptions.playerName[n].generic.y + SMALLCHAR_HEIGHT;
 		s_serveroptions.playerName[n].generic.left		= s_serveroptions.playerName[n].generic.x - SMALLCHAR_HEIGHT/ 2;
 		s_serveroptions.playerName[n].generic.right		= s_serveroptions.playerName[n].generic.x + 16 * SMALLCHAR_WIDTH;
-		Com_sprintf(s_serveroptions.playerNameAccessibleNameBuffers[n], sizeof(s_serveroptions.playerNameAccessibleNameBuffers[n]), "Player %d name:", n);
+		Com_sprintf(s_serveroptions.playerNameAccessibleNameBuffers[n], sizeof(s_serveroptions.playerNameAccessibleNameBuffers[n]), "Player %d name: %s", n, s_serveroptions.playerName[n].string ? s_serveroptions.playerName[n].string : "unset");
 		s_serveroptions.playerName[n].generic.accessibleName = s_serveroptions.playerNameAccessibleNameBuffers[n];
 
 		s_serveroptions.playerTeam[n].generic.type		= MTYPE_SPINCONTROL;

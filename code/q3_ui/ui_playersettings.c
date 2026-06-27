@@ -97,6 +97,9 @@ static const char *handicap_items[] = {
 	"5",
 	NULL
 };
+static const char *effects_items[] = {
+	"Red", "Yellow", "Green", "Teal", "Blue", "Cyan", "White"
+};
 
 
 /*
@@ -411,6 +414,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.handicap.generic.right		= 192 + 200;
 	s_playersettings.handicap.generic.bottom	= y + 2 * PROP_HEIGHT;
 	s_playersettings.handicap.numitems			= 20;
+	s_playersettings.handicap.itemnames = handicap_items;
 
 	y += 3 * PROP_HEIGHT;
 	s_playersettings.effects.generic.type		= MTYPE_SPINCONTROL;
@@ -425,6 +429,7 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.effects.generic.bottom		= y + 2* PROP_HEIGHT;
 	s_playersettings.effects.generic.accessibleName = "Effects";
 	s_playersettings.effects.numitems			= 7;
+	s_playersettings.effects.itemnames = effects_items;
 
 	s_playersettings.model.generic.type			= MTYPE_BITMAP;
 	s_playersettings.model.generic.name			= ART_MODEL0;
