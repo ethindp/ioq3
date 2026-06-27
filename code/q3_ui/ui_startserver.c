@@ -661,6 +661,9 @@ typedef struct {
 	int					gametype;
 	char				mapnamebuffer[32];
 	char				playerNameBuffers[PLAYER_SLOTS][16];
+	char				playerNameAccessibleNameBuffers[PLAYER_SLOTS][256];
+	char				playerTypeAccessibleNameBuffers[PLAYER_SLOTS][256];
+	char				playerTeamAccessibleNameBuffers[PLAYER_SLOTS][256];
 
 	qboolean			newBot;
 	int					newBotIndex;
@@ -1382,6 +1385,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.player0.generic.flags			= QMF_SMALLFONT;
 	s_serveroptions.player0.generic.x				= 32 + SMALLCHAR_WIDTH;
 	s_serveroptions.player0.generic.y				= y;
+	s_serveroptions.player0.generic.accessibleName = "Player 2";
 	s_serveroptions.player0.color					= color_orange;
 	s_serveroptions.player0.style					= UI_LEFT|UI_SMALLFONT;
 
@@ -1392,6 +1396,8 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.playerType[n].generic.callback	= ServerOptions_Event;
 		s_serveroptions.playerType[n].generic.x			= 32;
 		s_serveroptions.playerType[n].generic.y			= y;
+		Com_sprintf(s_serveroptions.playerTypeAccessibleNameBuffers[n], sizeof(s_serveroptions.playerTypeAccessibleNameBuffers[n]), "Player %d type:", n);
+		s_serveroptions.playerType[n].generic.accessibleName = s_serveroptions.playerTypeAccessibleNameBuffers[n];
 		s_serveroptions.playerType[n].itemnames			= playerType_list;
 
 		s_serveroptions.playerName[n].generic.type		= MTYPE_TEXT;
@@ -1408,11 +1414,15 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.playerName[n].generic.bottom	= s_serveroptions.playerName[n].generic.y + SMALLCHAR_HEIGHT;
 		s_serveroptions.playerName[n].generic.left		= s_serveroptions.playerName[n].generic.x - SMALLCHAR_HEIGHT/ 2;
 		s_serveroptions.playerName[n].generic.right		= s_serveroptions.playerName[n].generic.x + 16 * SMALLCHAR_WIDTH;
+		Com_sprintf(s_serveroptions.playerNameAccessibleNameBuffers[n], sizeof(s_serveroptions.playerNameAccessibleNameBuffers[n]), "Player %d name:", n);
+		s_serveroptions.playerName[n].generic.accessibleName = s_serveroptions.playerNameAccessibleNameBuffers[n];
 
 		s_serveroptions.playerTeam[n].generic.type		= MTYPE_SPINCONTROL;
 		s_serveroptions.playerTeam[n].generic.flags		= QMF_SMALLFONT;
 		s_serveroptions.playerTeam[n].generic.x			= 240;
 		s_serveroptions.playerTeam[n].generic.y			= y;
+		Com_sprintf(s_serveroptions.playerTeamAccessibleNameBuffers[n], sizeof(s_serveroptions.playerTeamAccessibleNameBuffers[n]), "Player %d team:", n);
+		s_serveroptions.playerTeam[n].generic.accessibleName = s_serveroptions.playerTeamAccessibleNameBuffers[n];
 		s_serveroptions.playerTeam[n].itemnames			= playerTeam_list;
 
 		y += ( SMALLCHAR_HEIGHT + 4 );
