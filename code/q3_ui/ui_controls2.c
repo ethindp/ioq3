@@ -221,6 +221,7 @@ typedef struct
 
 	menubitmap_s		back;
 	menutext_s			name;
+	char				accessibleBinds[64][128]; 
 } controls_t; 	
 
 static controls_t s_controls;
@@ -558,6 +559,33 @@ static void Controls_Update( void ) {
 	int		y;
 	menucommon_s	**controls;
 	menucommon_s	*control;
+	menucommon_s * focusedItem;
+
+	// Update accessible names for bindings so screen readers speak the currently bound key(s)
+	for( i = 0; i < C_MAX; i++ ) {
+		controls = g_controls[i];
+		for( j = 0; (control = controls[j]) != NULL; j++ ) {
+			if( control->type == MTYPE_ACTION ) {
+				int b1 = g_bindings[control->id].bind1;
+				int b2 = g_bindings[control->id].bind2;
+				char name1[32], name2[32];
+				if (b1 == -1) {
+					strcpy(name1, "unassigned");
+				} else {
+					trap_Key_KeynumToStringBuf( b1, name1, 32 );
+					Q_strupr(name1);
+				}
+				if (b2 != -1) {
+					trap_Key_KeynumToStringBuf( b2, name2, 32 );
+					Q_strupr(name2);
+					Com_sprintf(s_controls.accessibleBinds[control->id], sizeof(s_controls.accessibleBinds[control->id]), "%s: %s or %s", g_bindings[control->id].label, name1, name2);
+				} else {
+					Com_sprintf(s_controls.accessibleBinds[control->id], sizeof(s_controls.accessibleBinds[control->id]), "%s: %s", g_bindings[control->id].label, name1);
+				}
+				control->accessibleName = s_controls.accessibleBinds[control->id];
+			}
+		}
+	}
 
 	// disable all controls in all groups
 	for( i = 0; i < C_MAX; i++ ) {
@@ -592,7 +620,12 @@ static void Controls_Update( void ) {
 		}
 
 		// enable action item
-		((menucommon_s*)(s_controls.menu.items[s_controls.menu.cursor]))->flags &= ~QMF_GRAYED;
+		focusedItem = (menucommon_s*)(s_controls.menu.items[s_controls.menu.cursor]);
+		focusedItem->flags &= ~QMF_GRAYED;
+
+		if (focusedItem->type == MTYPE_ACTION) {
+			focusedItem->accessibleName = "Waiting for new key. Press Enter to change, Backspace to clear, Escape to cancel.";
+		}
 
 		// don't gray out player's name
 		s_controls.name.generic.flags &= ~QMF_GRAYED;
@@ -1561,21 +1594,6 @@ static void Controls_MenuInit( void )
 	s_controls.name.string			= playername;
 	s_controls.name.style			= UI_CENTER;
 	s_controls.name.color			= text_color_normal;
-
-	// label every key-binding row for speech, taken from the bindings table
-	{
-		int				i, j;
-		menucommon_s	**controls;
-		menucommon_s	*control;
-
-		for( i = 0; i < C_MAX; i++ ) {
-			controls = g_controls[i];
-			for( j = 0; (control = controls[j]) != NULL; j++ ) {
-				if( control->type == MTYPE_ACTION )
-					control->accessibleName = g_bindings[control->id].label;
-			}
-		}
-	}
 
 	Menu_AddItem( &s_controls.menu, &s_controls.banner );
 	Menu_AddItem( &s_controls.menu, &s_controls.framel );

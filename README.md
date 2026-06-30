@@ -1,4 +1,10 @@
-![Build](https://github.com/ioquake/ioq3/workflows/Build/badge.svg)
+![Build](https://github.com/ethindp/ioq3/workflows/Build/badge.svg)
+
+## Introduction
+
+This is a hard-fork of ioquake 3 to add accessibility features to ioquake 3 (and other games which use the engine) for individuals with disabilities and for other purposes/enhancements. We will occasionally merge changes from ioquake upstream if we determine that they may be useful, but in general this fork intends to go it's own direction since ioquake will not accept the contributions in this fork.
+
+The original ioquake readme follows.
 
                    ,---------------------------------------.
                    |   _                     _       ____  |

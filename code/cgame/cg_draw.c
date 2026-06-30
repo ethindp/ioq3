@@ -2654,45 +2654,24 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
  	CG_Draw2D(stereoView);
 }
 
-typedef struct {
-	float acquire;
-	float lock;
-} weaponCone_t;
-
-// per-weapon firing-solution cones, in degrees: acquire = where the pitch
-// ramp begins, lock = the firing solution.
-static const weaponCone_t weaponCones[WP_NUM_WEAPONS] = {
-	{  0.0f,  0.0f },	// WP_NONE
-	{ 30.0f, 12.0f },
-	{ 20.0f,  2.0f },
-	{ 20.0f,  4.0f },
-	{ 22.0f,  6.0f },
-	{ 22.0f,  5.0f },
-	{ 18.0f,  3.0f },
-	{ 18.0f,  1.5f },
-	{ 20.0f,  4.0f },
-	{ 22.0f,  6.0f },
-	{ 20.0f,  5.0f },
-};
+#define TARGET_HIT_RADIUS_FALLBACK	18.0f
+#define ACQUIRE_MULT		6.0f
 
 /*
 =================
 CG_UpdateTargeting
-
-Once per frame: pick an enemy (radar = nearest, scope = best-aligned), then
-drive the targeting source. Volume encodes proximity (radar), pitch encodes
-aim alignment (scope); inside the weapon's lock cone it swaps to the lock tone.
 =================
 */
 void CG_UpdateTargeting( void ) {
-	int				i, best, myClient, myTeam, weap;
+	int				i, best, myClient, myTeam, weap, bestSolid = 0;
 	float			bestMetric = 0.0f, bestDist = 0.0f, bestDot = -2.0f;
+	float			weapRange;
 	vec3_t			eye, forward, target, dir, dirn;
 	trace_t			tr;
 	float			gain, pitch;
 	sfxHandle_t		sfx;
 	const float		radarRange = 2000.0f;
-	const float		bgGain = 0.12f, maxGain = 1.0f;
+	const float		bgGain = 0.0f, maxGain = 0.7f;
 	if ( !cg_targeting.integer || !cg.snap || cg.snap->ps.pm_type != PM_NORMAL ) {
 		trap_S_TargetTone( qfalse, 0.0f, 1.0f, 0 );
 		cg.targetEnt = -1;
@@ -2704,6 +2683,10 @@ void CG_UpdateTargeting( void ) {
 	VectorCopy( cg.refdef.viewaxis[0], forward );
 	myClient = cg.snap->ps.clientNum;
 	myTeam   = cg.snap->ps.persistant[PERS_TEAM];
+	weap = cg.snap->ps.weapon;
+	if ( weap <= WP_NONE || weap >= WP_NUM_WEAPONS )
+		weap = WP_MACHINEGUN;
+	weapRange = ( weap == WP_LIGHTNING ) ? (float) LIGHTNING_RANGE : ( weap == WP_GAUNTLET )  ? 64.0f : radarRange;
 	best = -1;
 	for ( i = 0; i < cg.snap->numEntities; i++ ) {
 		entityState_t	*es = &cg.snap->entities[i];
@@ -2717,16 +2700,16 @@ void CG_UpdateTargeting( void ) {
 			continue;
 		cent = &cg_entities[ es->number ];
 		VectorCopy( cent->lerpOrigin, target );
-		target[2] += 24.0f;					// aim at torso, not feet
+		target[2] += 24.0f;
 		VectorSubtract( target, eye, dir );
 		dist = VectorLength( dir );
-		if ( dist < 1.0f || dist > radarRange )
+		if ( dist < 1.0f || dist > weapRange )
 			continue;
 		VectorScale( dir, 1.0f / dist, dirn );
 		dot = DotProduct( forward, dirn );
 		CG_Trace( &tr, eye, NULL, NULL, target, myClient, MASK_SHOT );
 		if ( tr.fraction < 1.0f && tr.entityNum != es->number )
-			continue;	// no LOS
+			continue;
 		metric = cg_targetMode.integer ? dot : -dist;
 		if ( es->number == cg.targetEnt )
 			metric += cg_targetMode.integer ? 0.02f : 50.0f;
@@ -2735,6 +2718,7 @@ void CG_UpdateTargeting( void ) {
 			bestMetric = metric;
 			bestDist = dist;
 			bestDot = dot;
+			bestSolid = es->solid;
 		}
 	}
 	if ( best < 0 ) {
@@ -2745,14 +2729,12 @@ void CG_UpdateTargeting( void ) {
 		sfx   = cgs.media.targetPingSound;
 	} else {
 		cg.targetEnt = best;
-		weap = cg.snap->ps.weapon;
-		if ( weap <= WP_NONE || weap >= WP_NUM_WEAPONS )
-			weap = WP_MACHINEGUN;
 		{
-			float clamped = bestDot > 1.0f ? 1.0f : ( bestDot < -1.0f ? -1.0f : bestDot );
-			float angle   = RAD2DEG( acos( clamped ) );
-			float acquire = weaponCones[weap].acquire;
-			float lockAng = weaponCones[weap].lock;
+			float clamped  = bestDot > 1.0f ? 1.0f : ( bestDot < -1.0f ? -1.0f : bestDot );
+			float angle    = RAD2DEG( acos( clamped ) );
+			float hitRadius = ( bestSolid != SOLID_BMODEL && ( bestSolid & 255 ) >= 1 ) ? (float)( bestSolid & 255 ) : TARGET_HIT_RADIUS_FALLBACK;
+			float lockAng   = RAD2DEG( atan2( hitRadius, bestDist ) ) + ( weap == WP_SHOTGUN ? RAD2DEG( atan2( (float) DEFAULT_SHOTGUN_SPREAD, 8192.0f ) ) : 0.0f );
+			float acquire  = lockAng * ACQUIRE_MULT;
 			float lockExit = lockAng + 2.0f;
 			const float targetMinGain = 0.30f;
 			if ( cg.targetLocked ? ( angle <= lockExit ) : ( angle <= lockAng ) ) {
@@ -2762,7 +2744,7 @@ void CG_UpdateTargeting( void ) {
 				sfx   = cgs.media.targetLockSound;
 			} else {
 				cg.targetLocked = qfalse;
-				gain = targetMinGain + ( maxGain - targetMinGain ) * ( 1.0f - bestDist / radarRange );
+				gain = targetMinGain + ( maxGain - targetMinGain ) * ( 1.0f - bestDist / weapRange );
 				if ( angle <= acquire ) {
 					float frac = ( acquire - angle ) / ( acquire - lockAng );
 					pitch = pow( cg_targetMaxPitch.value, frac );
