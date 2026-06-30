@@ -2656,6 +2656,219 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 
 #define TARGET_HIT_RADIUS_FALLBACK	18.0f
 #define ACQUIRE_MULT		6.0f
+#define GRENADE_SIM_STEP	25
+#define GRENADE_RESTITUTION	0.65f
+#define GRENADE_STOP_SPEED	40.0f
+
+typedef struct {
+	qboolean	hitscan;
+	qboolean	arc;
+	qboolean	bounce;
+	float		speed;
+	float		splashRadius;
+	float		range;
+	int			lifetime;
+} munition_t;
+
+/*
+=================
+CG_GetMunition
+=================
+*/
+static void CG_GetMunition( int weap, munition_t *m ) {
+	Com_Memset( m, 0, sizeof ( *m ) );
+	switch ( weap ) {
+	case WP_GAUNTLET:
+		m->hitscan = qtrue;
+		m->range = 64.0f;
+	break;
+	case WP_MACHINEGUN:
+	case WP_RAILGUN:
+	case WP_SHOTGUN:
+		m->hitscan = qtrue;
+		m->range = 8192.0f;
+	break;
+	case WP_LIGHTNING:
+		m->hitscan = qtrue;
+		m->range = LIGHTNING_RANGE;
+	break;
+	case WP_ROCKET_LAUNCHER:
+		m->speed = 900.0f;
+		m->splashRadius = 120.0f;
+		m->lifetime = 15000;
+	break;
+	case WP_PLASMAGUN:
+		m->speed = 2000.0f;
+		m->splashRadius = 20.0f;
+		m->lifetime = 10000;
+	break;
+	case WP_BFG:
+		m->speed = 2000.0f;
+		m->splashRadius = 120.0f;
+		m->lifetime = 10000;
+	break;
+	case WP_GRENADE_LAUNCHER:
+		m->speed = 700.0f;
+		m->splashRadius = 150.0f;
+		m->lifetime = 2500;
+		m->arc = qtrue;
+		m->bounce = qtrue;
+	break;
+	default:
+		m->hitscan = qtrue;
+		m->range = 8192.0f;
+	break;
+	}
+}
+
+/*
+=================
+CG_EntityBounds
+=================
+*/
+static void CG_EntityBounds( int entNum, vec3_t absmin, vec3_t absmax ) {
+	centity_t	*cent = &cg_entities[ entNum ];
+	float		x, zd, zu;
+	int			solid = cent->currentState.solid;
+	if ( solid == SOLID_BMODEL || ( solid & 255 ) == 0 ) {
+		x = 15.0f; zd = 24.0f; zu = 32.0f;
+	} else {
+		x  = (float)( solid & 255 );
+		zd = (float)( ( solid >> 8 ) & 255 );
+		zu = (float)( ( ( solid >> 16 ) & 255 ) - 32 );
+	}
+	VectorSet( absmin, cent->lerpOrigin[0] - x, cent->lerpOrigin[1] - x, cent->lerpOrigin[2] - zd );
+	VectorSet( absmax, cent->lerpOrigin[0] + x, cent->lerpOrigin[1] + x, cent->lerpOrigin[2] + zu );
+}
+
+/*
+=================
+CG_SplashDist
+=================
+*/
+static float CG_SplashDist( const vec3_t blast, int targetNum ) {
+	vec3_t	absmin, absmax, v;
+	int		i;
+	CG_EntityBounds( targetNum, absmin, absmax );
+	for ( i = 0; i < 3; i++ ) {
+		if ( blast[i] < absmin[i] )
+			v[i] = absmin[i] - blast[i];
+		else if ( blast[i] > absmax[i] )
+			v[i] = blast[i] - absmax[i];
+		else
+			v[i] = 0.0f;
+	}
+	return VectorLength( v );
+}
+
+/*
+=================
+CG_SplashLOS
+=================
+*/
+static qboolean CG_SplashLOS( const vec3_t blast, int targetNum ) {
+	vec3_t	absmin, absmax, mid, dest;
+	trace_t	tr;
+	int		sx, sy;
+	CG_EntityBounds( targetNum, absmin, absmax );
+	VectorAdd( absmin, absmax, mid );
+	VectorScale( mid, 0.5f, mid );
+	CG_Trace( &tr, blast, NULL, NULL, mid, -1, MASK_SOLID );
+	if ( tr.fraction == 1.0f || tr.entityNum == targetNum )
+		return qtrue;
+
+	for ( sx = -1; sx <= 1; sx += 2 ) {
+		for ( sy = -1; sy <= 1; sy += 2 ) {
+			VectorCopy( mid, dest );
+			dest[0] += sx * 15.0f;
+			dest[1] += sy * 15.0f;
+			dest[2] += 15.0f;
+			CG_Trace( &tr, blast, NULL, NULL, dest, -1, MASK_SOLID );
+			if ( tr.fraction == 1.0f )
+				return qtrue;
+		}
+	}
+	return qfalse;
+}
+
+/*
+=================
+CG_SimulateArc
+=================
+*/
+static void CG_SimulateArc( const vec3_t start, const vec3_t dir, const munition_t *m, vec3_t blastOut ) {
+	trajectory_t	t;
+	vec3_t			prev, next, vel, nd;
+	trace_t			tr;
+	float			dot;
+	int				now, tImpact, skip;
+	skip = cg.snap->ps.clientNum;
+	t.trType = TR_GRAVITY;
+	t.trTime = 0;
+	VectorCopy( start, t.trBase );
+	VectorScale( dir, m->speed, t.trDelta );
+	VectorCopy( start, prev );
+
+	for ( now = GRENADE_SIM_STEP; now <= m->lifetime; now += GRENADE_SIM_STEP ) {
+		BG_EvaluateTrajectory( &t, now, next );
+		CG_Trace( &tr, prev, NULL, NULL, next, skip, MASK_SHOT );
+		if ( tr.fraction >= 1.0f ) {
+			VectorCopy( next, prev );
+			continue;
+		}
+		if ( tr.entityNum < MAX_CLIENTS ) {
+			VectorCopy( tr.endpos, blastOut );
+			return;
+		}
+
+		tImpact = now - GRENADE_SIM_STEP + (int)( GRENADE_SIM_STEP * tr.fraction );
+		BG_EvaluateTrajectoryDelta( &t, tImpact, vel );
+		dot = DotProduct( vel, tr.plane.normal );
+		VectorMA( vel, -2.0f * dot, tr.plane.normal, nd );
+		VectorScale( nd, GRENADE_RESTITUTION, nd );
+		if ( tr.plane.normal[2] > 0.2f && VectorLength( nd ) < GRENADE_STOP_SPEED ) {
+			VectorCopy( tr.endpos, blastOut );
+			return;
+		}
+		VectorAdd( tr.endpos, tr.plane.normal, t.trBase );
+		VectorCopy( nd, t.trDelta );
+		t.trTime = tImpact;
+		VectorCopy( t.trBase, prev );
+		now = tImpact;
+	}
+	VectorCopy( prev, blastOut );
+}
+
+/*
+=================
+CG_ShotWouldHarm
+=================
+*/
+static qboolean CG_ShotWouldHarm( const vec3_t start, const vec3_t dir, const munition_t *m, int targetNum, int selfNum, float *nearOut ) {
+	vec3_t	blast;
+	float	d;
+
+	if ( m->arc || m->bounce ) {
+		CG_SimulateArc( start, dir, m, blast );
+	} else {
+		vec3_t	end;
+		trace_t	tr;
+		float	reach = m->speed * ( m->lifetime / 1000.0f );
+		VectorMA( start, reach, dir, end );
+		CG_Trace( &tr, start, NULL, NULL, end, selfNum, MASK_SHOT );
+		VectorCopy( tr.endpos, blast );
+	}
+
+	d = CG_SplashDist( blast, targetNum );
+	if ( nearOut )
+		*nearOut = d;
+
+	if ( d >= m->splashRadius || !CG_SplashLOS( blast, targetNum ) )
+		return qfalse;
+	if ( CG_SplashDist( blast, selfNum ) < m->splashRadius && CG_SplashLOS( blast, selfNum ) )
+		return qfalse;
+	return qtrue;
+}
 
 /*
 =================
@@ -2670,6 +2883,8 @@ void CG_UpdateTargeting( void ) {
 	trace_t			tr;
 	float			gain, pitch;
 	sfxHandle_t		sfx;
+	munition_t		m;
+	qboolean		isArc;
 	const float		radarRange = 2000.0f;
 	const float		bgGain = 0.0f, maxGain = 0.7f;
 	if ( !cg_targeting.integer || !cg.snap || cg.snap->ps.pm_type != PM_NORMAL ) {
@@ -2686,7 +2901,9 @@ void CG_UpdateTargeting( void ) {
 	weap = cg.snap->ps.weapon;
 	if ( weap <= WP_NONE || weap >= WP_NUM_WEAPONS )
 		weap = WP_MACHINEGUN;
-	weapRange = ( weap == WP_LIGHTNING ) ? (float) LIGHTNING_RANGE : ( weap == WP_GAUNTLET )  ? 64.0f : radarRange;
+	CG_GetMunition( weap, &m );
+	isArc = (qboolean)( m.arc || m.bounce );
+	weapRange = ( m.hitscan && m.range < radarRange ) ? m.range : radarRange;
 	best = -1;
 	for ( i = 0; i < cg.snap->numEntities; i++ ) {
 		entityState_t	*es = &cg.snap->entities[i];
@@ -2707,12 +2924,14 @@ void CG_UpdateTargeting( void ) {
 			continue;
 		VectorScale( dir, 1.0f / dist, dirn );
 		dot = DotProduct( forward, dirn );
-		CG_Trace( &tr, eye, NULL, NULL, target, myClient, MASK_SHOT );
-		if ( tr.fraction < 1.0f && tr.entityNum != es->number )
-			continue;
-		metric = cg_targetMode.integer ? dot : -dist;
+		if ( !isArc ) {
+			CG_Trace( &tr, eye, NULL, NULL, target, myClient, MASK_SHOT );
+			if ( tr.fraction < 1.0f && tr.entityNum != es->number )
+				continue;
+		}
+		metric = ( cg_targetMode.integer && !isArc ) ? dot : -dist;
 		if ( es->number == cg.targetEnt )
-			metric += cg_targetMode.integer ? 0.02f : 50.0f;
+			metric += ( cg_targetMode.integer && !isArc ) ? 0.02f : 50.0f;
 		if ( best < 0 || metric > bestMetric ) {
 			best = es->number;
 			bestMetric = metric;
@@ -2730,14 +2949,25 @@ void CG_UpdateTargeting( void ) {
 	} else {
 		cg.targetEnt = best;
 		{
-			float clamped  = bestDot > 1.0f ? 1.0f : ( bestDot < -1.0f ? -1.0f : bestDot );
-			float angle    = RAD2DEG( acos( clamped ) );
-			float hitRadius = ( bestSolid != SOLID_BMODEL && ( bestSolid & 255 ) >= 1 ) ? (float)( bestSolid & 255 ) : TARGET_HIT_RADIUS_FALLBACK;
-			float lockAng   = RAD2DEG( atan2( hitRadius, bestDist ) ) + ( weap == WP_SHOTGUN ? RAD2DEG( atan2( (float) DEFAULT_SHOTGUN_SPREAD, 8192.0f ) ) : 0.0f );
-			float acquire  = lockAng * ACQUIRE_MULT;
-			float lockExit = lockAng + 2.0f;
-			const float targetMinGain = 0.30f;
-			if ( cg.targetLocked ? ( angle <= lockExit ) : ( angle <= lockAng ) ) {
+			const float	targetMinGain = 0.30f;
+			qboolean	locked;
+			float		nearDist = 0.0f;
+			float		angle = 0.0f, lockAng = 0.0f, acquire = 0.0f;
+
+			if ( !isArc ) {
+				float clamped   = bestDot > 1.0f ? 1.0f : ( bestDot < -1.0f ? -1.0f : bestDot );
+				float hitRadius = ( bestSolid != SOLID_BMODEL && ( bestSolid & 255 ) >= 1 ) ? (float)( bestSolid & 255 ) : TARGET_HIT_RADIUS_FALLBACK;
+				angle   = RAD2DEG( acos( clamped ) );
+				lockAng = RAD2DEG( atan2( hitRadius, bestDist ) ) + ( weap == WP_SHOTGUN ? RAD2DEG( atan2( (float) DEFAULT_SHOTGUN_SPREAD, 8192.0f ) ) : 0.0f );
+				acquire = lockAng * ACQUIRE_MULT;
+			}
+
+			if ( m.splashRadius > 0.0f )
+				locked = CG_ShotWouldHarm( eye, forward, &m, best, myClient, &nearDist );
+			else
+				locked = (qboolean)( cg.targetLocked ? ( angle <= lockAng + 2.0f ) : ( angle <= lockAng ) );
+
+			if ( locked ) {
 				cg.targetLocked = qtrue;
 				gain  = maxGain;
 				pitch = 1.0f;
@@ -2745,11 +2975,22 @@ void CG_UpdateTargeting( void ) {
 			} else {
 				cg.targetLocked = qfalse;
 				gain = targetMinGain + ( maxGain - targetMinGain ) * ( 1.0f - bestDist / weapRange );
-				if ( angle <= acquire ) {
-					float frac = ( acquire - angle ) / ( acquire - lockAng );
-					pitch = pow( cg_targetMaxPitch.value, frac );
+
+				if ( isArc ) {
+					float acquireDist = m.splashRadius * ACQUIRE_MULT;
+					if ( nearDist <= acquireDist ) {
+						float frac = ( acquireDist - nearDist ) / ( acquireDist - m.splashRadius );
+						pitch = pow( cg_targetMaxPitch.value, frac );
+					} else {
+						pitch = 1.0f;
+					}
 				} else {
-					pitch = 1.0f;
+					if ( angle <= acquire ) {
+						float frac = ( acquire - angle ) / ( acquire - lockAng );
+						pitch = pow( cg_targetMaxPitch.value, frac );
+					} else {
+						pitch = 1.0f;
+					}
 				}
 				sfx = cgs.media.targetPingSound;
 			}
